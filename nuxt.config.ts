@@ -9,6 +9,10 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   css: ["~/assets/css/main.css"],
   modules: ["@nuxt/eslint", "@nuxt/ui", "@nuxt/icon"],
+  colorMode: {
+    preference: "system", // auto-detect the OS theme until the user overrides
+    fallback: "light", // used during SSR / when the OS preference is unknown
+  },
   eslint: {
     config: {
       standalone: false,

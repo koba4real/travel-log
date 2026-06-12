@@ -18,13 +18,18 @@
   },
   "dependencies": {
     "@nuxt/eslint": "1.15.2",
+    "@nuxt/icon": "^2.2.3",
+    "@nuxt/ui": "^4.8.2",
+    "@tailwindcss/vite": "^4.3.0",
     "eslint": "^10.4.1",
     "nuxt": "^4.4.7",
+    "tailwindcss": "^4.3.0",
     "vue": "^3.5.35",
     "vue-router": "^5.1.0"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^9.0.0",
+    "@iconify-json/tabler": "^1.2.35",
     "eslint-plugin-format": "^2.0.1",
     "husky": "^9.1.7",
     "lint-staged": "^17.0.7"
@@ -32,5 +37,4 @@
   "lint-staged": {
     "*": "pnpm lint"
   }
-
 }

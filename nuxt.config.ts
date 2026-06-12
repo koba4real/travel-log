@@ -19,4 +19,13 @@ export default defineNuxtConfig({
       tailwindcss(),
     ],
   },
+  components: {
+    dirs: [
+      {
+        path: "~/components",
+        pathPrefix: false,
+        global: true,
+      },
+    ],
+  },
 });

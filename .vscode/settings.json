@@ -56,6 +56,9 @@
     "postcss"
   ],
   "cSpell.words": [
-    "esbuild"
+    "esbuild",
+    "kbds",
+    "lucide",
+    "nuxt"
   ]
 }

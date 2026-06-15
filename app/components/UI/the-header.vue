@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import AuthButton from "./auth-button.vue";
+
 // Guest-facing site header: brand on the left, theme toggle and the
 // GitHub sign-in call-to-action on the right.
 </script>
@@ -15,13 +17,7 @@
     <template #right>
       <UColorModeButton />
 
-      <UButton
-        label="Sign in"
-        color="neutral"
-        variant="subtle"
-        trailing-icon="tabler:brand-github"
-        to="/sign-in"
-      />
+      <AuthButton />
     </template>
   </UHeader>
 </template>

@@ -8,7 +8,7 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
   css: ["~/assets/css/main.css"],
-  modules: ["@nuxt/eslint", "@nuxt/ui", "@nuxt/icon"],
+  modules: ["@nuxt/eslint", "@nuxt/ui", "@nuxt/icon", "@pinia/nuxt"],
   colorMode: {
     preference: "system", // auto-detect the OS theme until the user overrides
     fallback: "light", // used during SSR / when the OS preference is unknown

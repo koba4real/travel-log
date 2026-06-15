@@ -1,26 +1,6 @@
 <script lang="ts" setup>
 import type { PageFeatureProps } from "@nuxt/ui";
 
-// Primary call-to-action reused by the hero and the closing CTA section.
-const signInLink = {
-  label: "Sign in with GitHub",
-  to: "/sign-in",
-  icon: "tabler:brand-github",
-  size: "xl" as const,
-};
-
-const heroLinks = [
-  signInLink,
-  {
-    label: "See how it works",
-    to: "#features",
-    icon: "tabler:arrow-down",
-    color: "neutral" as const,
-    variant: "subtle" as const,
-    size: "xl" as const,
-  },
-];
-
 const features: PageFeatureProps[] = [
   {
     icon: "tabler:map-pin",
@@ -61,8 +41,18 @@ const features: PageFeatureProps[] = [
       description="Travel Log helps you remember every journey. Pin the places you've
         visited, organize them into trips, and relive your adventures on a
         beautiful interactive map — all in one place."
-      :links="heroLinks"
-    />
+    >
+      <template #links>
+        <AuthButton color="primary" />
+        <UButton
+          label="See how it works"
+          to="#features"
+          icon="tabler:arrow-down"
+          color="neutral"
+          variant="subtle"
+        />
+      </template>
+    </UPageHero>
 
     <UPageSection
       id="features"
@@ -76,7 +66,10 @@ const features: PageFeatureProps[] = [
       title="Ready to start your travel log?"
       description="Sign in with GitHub and drop your first pin in seconds. It's free."
       variant="subtle"
-      :links="[signInLink]"
-    />
+    >
+      <template #links>
+        <AuthButton color="primary" />
+      </template>
+    </UPageCTA>
   </div>
 </template>

@@ -1,6 +1,6 @@
 import { createAuthClient } from "better-auth/vue";
 
-const authClient = createAuthClient();
+export const authClient = createAuthClient();
 
 export const useAuthStore = defineStore("useAuthStore", () => {
   const toast = useToast();

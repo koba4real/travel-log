@@ -8,9 +8,9 @@ CREATE TABLE `location` (
 	`created_at` integer NOT NULL,
 	`updated_at` integer NOT NULL
 );
-
-CREATE UNIQUE INDEX `location_slug_unique` ON `location` (`slug`);
-CREATE UNIQUE INDEX `location_name_unique` ON `location` (`name`);
+--> statement-breakpoint
+CREATE UNIQUE INDEX `location_slug_unique` ON `location` (`slug`);--> statement-breakpoint
+CREATE UNIQUE INDEX `location_name_unique` ON `location` (`name`);--> statement-breakpoint
 CREATE TABLE `locationLog` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`name` text NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE `locationLog` (
 	`updated_at` integer NOT NULL,
 	FOREIGN KEY (`location_id`) REFERENCES `location`(`id`) ON UPDATE no action ON DELETE cascade
 );
-
+--> statement-breakpoint
 CREATE TABLE `locationLogImage` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`key` text NOT NULL,

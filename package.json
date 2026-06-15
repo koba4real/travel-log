@@ -14,13 +14,20 @@
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "prepare": "husky"
+    "prepare": "husky",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:shell": "tursodb local.db"
   },
   "dependencies": {
+    "@libsql/client": "^0.17.3",
     "@nuxt/eslint": "1.15.2",
     "@nuxt/icon": "^2.2.3",
     "@nuxt/ui": "^4.8.2",
     "@tailwindcss/vite": "^4.3.0",
+    "drizzle-orm": "^0.45.2",
     "eslint": "^10.4.1",
     "motion-v": "^2.3.0",
     "nuxt": "^4.4.7",
@@ -32,6 +39,8 @@
   "devDependencies": {
     "@antfu/eslint-config": "^9.0.0",
     "@iconify-json/tabler": "^1.2.35",
+    "dotenv": "^17.4.2",
+    "drizzle-kit": "^0.31.10",
     "eslint-plugin-format": "^2.0.1",
     "husky": "^9.1.7",
     "lint-staged": "^17.0.7"

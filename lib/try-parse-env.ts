@@ -1,6 +1,7 @@
 /* eslint-disable node/no-process-env */
 import type { z } from "zod";
 
+import process from "node:process";
 import { ZodError } from "zod";
 
 export default function tryParseEnv<T extends z.ZodType>(
@@ -14,7 +15,7 @@ export default function tryParseEnv<T extends z.ZodType>(
     if (error instanceof ZodError) {
       let message = "Missing required values in .env:\n";
       error.issues.forEach((issue) => {
-        message += `${issue.path[0]}\n`;
+        message += `${String(issue.path[0])}\n`;
       });
       const e = new Error(message);
       e.stack = "";

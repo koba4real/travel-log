@@ -5,6 +5,16 @@ import tryParseEnv from "./try-parse-env";
 
 const EnvSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+  TURSO_DATABASE_URL: z.string().nonempty("TURSO_DATABASE_URL is required"),
+  TURSO_AUTH_TOKEN: z.string().optional(),
+}).superRefine((input, ctx) => {
+  if (input.NODE_ENV === "production" && !input.TURSO_AUTH_TOKEN) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["TURSO_AUTH_TOKEN"],
+      message: "TURSO_AUTH_TOKEN is required when NODE_ENV is 'production'",
+    });
+  }
 });
 
 export type Env = z.infer<typeof EnvSchema>;

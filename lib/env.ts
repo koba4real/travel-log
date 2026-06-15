@@ -9,6 +9,8 @@ const EnvSchema = z.object({
   TURSO_AUTH_TOKEN: z.string().optional(),
   BETTER_AUTH_SECRET: z.string(),
   BETTER_AUTH_URL: z.string(),
+  AUTH_GITHUB_CLIENT_ID: z.string(),
+  AUTH_GITHUB_CLIENT_SECRET: z.string(),
 }).superRefine((input, ctx) => {
   if (input.NODE_ENV === "production" && !input.TURSO_AUTH_TOKEN) {
     ctx.addIssue({

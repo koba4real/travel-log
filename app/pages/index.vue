@@ -43,7 +43,7 @@ const features: PageFeatureProps[] = [
         beautiful interactive map — all in one place."
     >
       <template #links>
-        <AuthButton color="primary" />
+        <GetStartedButton />
         <UButton
           label="See how it works"
           to="#features"
@@ -68,7 +68,7 @@ const features: PageFeatureProps[] = [
       variant="subtle"
     >
       <template #links>
-        <AuthButton color="primary" />
+        <GetStartedButton />
       </template>
     </UPageCTA>
   </div>

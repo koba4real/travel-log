@@ -29,5 +29,23 @@ export const useAuthStore = defineStore("useAuthStore", () => {
     }
   }
 
-  return { loading, signIn, user };
+  async function signOut() {
+    try {
+      const { error } = await authClient.signOut();
+      if (error) {
+        throw new Error(error.message ?? "Unable to sign out.");
+      }
+      await navigateTo("/");
+    }
+    catch (err) {
+      toast.add({
+        title: "Sign out failed",
+        description: err instanceof Error ? err.message : "Something went wrong. Please try again.",
+        color: "error",
+        icon: "tabler:alert-triangle",
+      });
+    }
+  }
+
+  return { loading, signIn, signOut, user };
 });

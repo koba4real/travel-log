@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ButtonProps } from "@nuxt/ui";
+import type { ButtonProps, DropdownMenuItem } from "@nuxt/ui";
 
 import { useAuthStore } from "~/stores/auth";
 
@@ -8,17 +8,32 @@ const { color = "neutral" } = defineProps<{
 }>();
 
 const authStore = useAuthStore();
+
+const items = computed<DropdownMenuItem[]>(() => [
+  {
+    label: "Log out",
+    icon: "tabler:logout",
+    onSelect: () => authStore.signOut(),
+  },
+]);
 </script>
 
 <template>
-  <div v-if="authStore.user" class="auth-user">
-    <UAvatar
-      :src="authStore.user.image ?? undefined"
-      :alt="authStore.user.name"
-      size="sm"
-    />
-    <span class="auth-user__name">{{ authStore.user.name }}</span>
-  </div>
+  <UDropdownMenu v-if="authStore.user" :items="items">
+    <UButton
+      variant="ghost"
+      color="neutral"
+      class="auth-user"
+    >
+      <UAvatar
+        :src="authStore.user.image ?? undefined"
+        :alt="authStore.user.name"
+        size="sm"
+      />
+      <span class="auth-user__name">{{ authStore.user.name }}</span>
+    </UButton>
+  </UDropdownMenu>
+
   <UButton
     v-else
     :color="color"

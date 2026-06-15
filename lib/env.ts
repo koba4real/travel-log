@@ -7,6 +7,8 @@ const EnvSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
   TURSO_DATABASE_URL: z.string().nonempty("TURSO_DATABASE_URL is required"),
   TURSO_AUTH_TOKEN: z.string().optional(),
+  BETTER_AUTH_SECRET: z.string(),
+  BETTER_AUTH_URL: z.string(),
 }).superRefine((input, ctx) => {
   if (input.NODE_ENV === "production" && !input.TURSO_AUTH_TOKEN) {
     ctx.addIssue({

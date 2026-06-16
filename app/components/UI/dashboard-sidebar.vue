@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from "@nuxt/ui";
 
+const authStore = useAuthStore();
 const route = useRoute();
 
 const items = computed<NavigationMenuItem[][]>(() => [
@@ -15,6 +16,8 @@ const items = computed<NavigationMenuItem[][]>(() => [
   }, {
     label: "Add Location",
     icon: "tabler:circle-plus",
+    to: "/dashboard/add-location",
+    active: route.path === "/dashboard/add-location",
   }],
   [{
     label: "Settings",
@@ -22,6 +25,7 @@ const items = computed<NavigationMenuItem[][]>(() => [
   }, {
     label: "Logout",
     icon: "tabler:logout",
+    onSelect: () => authStore.signOut(),
   }],
 ]);
 </script>

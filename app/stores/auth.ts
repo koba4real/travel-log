@@ -1,12 +1,18 @@
 import { createAuthClient } from "better-auth/vue";
 
-export const authClient = createAuthClient();
+const authClient = createAuthClient();
 
 export const useAuthStore = defineStore("useAuthStore", () => {
   const toast = useToast();
-  const session = authClient.useSession();
+  const session = ref<Awaited<ReturnType<typeof authClient.useSession>> | null>(null);
+
+  async function init() {
+    const data = await authClient.useSession(useFetch);
+    session.value = data;
+  }
+
   const user = computed(() => session.value?.data?.user);
-  const loading = computed(() => session.value?.isPending || session.value?.isRefetching);
+  const loading = computed(() => session.value?.isPending);
 
   async function signIn() {
     try {
@@ -35,6 +41,9 @@ export const useAuthStore = defineStore("useAuthStore", () => {
       if (error) {
         throw new Error(error.message ?? "Unable to sign out.");
       }
+      // Clear local state so the header updates immediately — navigating to the
+      // public "/" route won't trigger an SSR refresh to re-read the session.
+      session.value = null;
       await navigateTo("/");
     }
     catch (err) {
@@ -47,5 +56,5 @@ export const useAuthStore = defineStore("useAuthStore", () => {
     }
   }
 
-  return { loading, signIn, signOut, user };
+  return { init, loading, signIn, signOut, user };
 });

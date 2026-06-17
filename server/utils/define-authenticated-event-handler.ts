@@ -10,7 +10,7 @@ export function defineAuthenticatedEventHandler<T extends EventHandlerRequest, D
     if (!session?.user) {
       throw createError({ statusCode: 401, statusMessage: "Unauthorized" });
     }
-    event.context.user = session.user; // available to future protected handlers
+    event.context.user = { ...session.user, id: Number(session.user.id) };
     return handler(event);
   });
 }

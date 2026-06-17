@@ -16,7 +16,7 @@ export const location = sqliteTable("location", {
   createdAt: int().notNull().$default(() => Date.now()),
   updatedAt: int().notNull().$default(() => Date.now()).$onUpdate(() => Date.now()),
 }, t => [
-  unique().on(t.name),
+  unique().on(t.name, t.userId),
 ]);
 
 export const locationRelations = relations(location, ({ many }) => ({

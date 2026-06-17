@@ -35,14 +35,11 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
   }
   catch (e) {
     const error = e as FetchError;
-    const titles: Record<number, string> = {
-      401: "Please log in",
-      422: "Invalid location details",
-    };
     toast.add({
-      title: titles[error.statusCode ?? 0] ?? "Could not add location",
-      description: error.statusMessage ?? "Something went wrong. Please try again.",
+      title: "Could not add location",
+      description: getFetchErrorMessage(error),
       color: "error",
+      icon: "tabler:alert-triangle",
     });
   }
   finally {

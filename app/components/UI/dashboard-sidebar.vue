@@ -13,11 +13,13 @@ const items = computed<NavigationMenuItem[][]>(() => [
   }, {
     label: "Locations",
     icon: "tabler:map-pin",
+    to: "/dashboard/location",
+    active: route.path === "/dashboard/location",
   }, {
     label: "Add Location",
     icon: "tabler:circle-plus",
-    to: "/dashboard/add-location",
-    active: route.path === "/dashboard/add-location",
+    to: "/dashboard/location/add-location",
+    active: route.path === "/dashboard/location/add-location",
   }],
   [{
     label: "Settings",

@@ -15,6 +15,13 @@
       "when": 1781513518284,
       "tag": "0001_medical_butterfly",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1781698071999,
+      "tag": "0002_true_pixie",
+      "breakpoints": true
     }
   ]
 }

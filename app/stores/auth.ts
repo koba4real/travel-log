@@ -19,6 +19,15 @@ export const useAuthStore = defineStore("useAuthStore", () => {
     return csrf ? { [headerName]: csrf } : {};
   }
 
+  function notifyError(title: string, error: unknown) {
+    toast.add({
+      title,
+      description: error instanceof Error ? error.message : "Something went wrong. Please try again.",
+      color: "error",
+      icon: "tabler:alert-triangle",
+    });
+  }
+
   async function signIn() {
     try {
       const { error } = await authClient.signIn.social({
@@ -32,12 +41,7 @@ export const useAuthStore = defineStore("useAuthStore", () => {
       }
     }
     catch (err) {
-      toast.add({
-        title: "Sign in failed",
-        description: err instanceof Error ? err.message : "Something went wrong. Please try again.",
-        color: "error",
-        icon: "tabler:alert-triangle",
-      });
+      notifyError("Sign in failed", err);
     }
   }
 
@@ -55,12 +59,7 @@ export const useAuthStore = defineStore("useAuthStore", () => {
       await navigateTo("/");
     }
     catch (err) {
-      toast.add({
-        title: "Sign out failed",
-        description: err instanceof Error ? err.message : "Something went wrong. Please try again.",
-        color: "error",
-        icon: "tabler:alert-triangle",
-      });
+      notifyError("Sign out failed", err);
     }
   }
 

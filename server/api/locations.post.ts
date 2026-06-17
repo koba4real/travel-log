@@ -1,13 +1,9 @@
 import db from "~~/lib/db";
 import { location, locationSchema } from "~~/lib/db/Schema/location";
+import slugify from "slugify";
 
-function slugify(name: string) {
-  const slug = name
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-  return slug || `location-${Date.now()}`;
+function toSlug(name: string) {
+  return slugify(name, { lower: true, strict: true, trim: true });
 }
 
 export default defineAuthenticatedEventHandler(async (event) => {
@@ -20,23 +16,31 @@ export default defineAuthenticatedEventHandler(async (event) => {
       data: result.error.issues,
     });
   }
+  const userId = event.context.user!.id;
+  const duplicate = await db.query.location.findFirst({
+    where: (loc, { and, eq }) => and(eq(loc.name, result.data.name), eq(loc.userId, userId)),
+  });
+  if (duplicate) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: "A location with this name already exists",
+    });
+  }
 
-  try {
-    const [createdLocation] = await db.insert(location).values({
-      ...result.data,
-      slug: slugify(result.data.name),
-      userId: event.context.user!.id,
-    }).returning();
-    return createdLocation;
+  // slug is globally unique — add a short random suffix on collision.
+  const originalSlug = toSlug(result.data.name);
+  let slug = originalSlug;
+  const existing = await db.query.location.findFirst({
+    where: (loc, { eq }) => eq(loc.slug, slug),
+  });
+  if (existing) {
+    slug = `${originalSlug}-${Math.random().toString(36).slice(2, 8)}`;
   }
-  catch (e) {
-    const error = e as Error;
-    if (error.message?.includes("UNIQUE constraint failed")) {
-      throw createError({
-        statusCode: 409,
-        statusMessage: "A location with this name already exists",
-      });
-    }
-    throw error;
-  }
+
+  const [createdLocation] = await db.insert(location).values({
+    ...result.data,
+    slug,
+    userId,
+  }).returning();
+  return createdLocation;
 });

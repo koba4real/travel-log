@@ -3,6 +3,13 @@ import type { InsertLocation } from "~~/lib/db/Schema/location";
 import db from "~~/lib/db";
 import { location } from "~~/lib/db/Schema/location";
 
+export async function findLocations(userId: number) {
+  return db.query.location.findMany({
+    where: (loc, { eq }) => eq(loc.userId, userId),
+    orderBy: (loc, { desc }) => desc(loc.createdAt),
+  });
+}
+
 export async function findLocationByName(name: string, userId: number) {
   return db.query.location.findFirst({
     where: (loc, { and, eq }) => and(eq(loc.name, name), eq(loc.userId, userId)),

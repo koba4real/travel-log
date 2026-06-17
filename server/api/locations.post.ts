@@ -1,5 +1,5 @@
-import db from "~~/lib/db";
-import { location, locationSchema } from "~~/lib/db/Schema/location";
+import { findLocationByName, findUniqueSlug, insertLocation } from "~~/lib/db/queries/location";
+import { locationSchema } from "~~/lib/db/Schema/location";
 import slugify from "slugify";
 
 function toSlug(name: string) {
@@ -7,7 +7,7 @@ function toSlug(name: string) {
 }
 
 export default defineAuthenticatedEventHandler(async (event) => {
-  const result = await readValidatedBody(event, body => locationSchema.safeParse(body));
+  const result = await readValidatedBody(event, locationSchema.safeParse);
 
   if (!result.success) {
     throw createError({
@@ -17,9 +17,8 @@ export default defineAuthenticatedEventHandler(async (event) => {
     });
   }
   const userId = event.context.user!.id;
-  const duplicate = await db.query.location.findFirst({
-    where: (loc, { and, eq }) => and(eq(loc.name, result.data.name), eq(loc.userId, userId)),
-  });
+
+  const duplicate = await findLocationByName(result.data.name, userId);
   if (duplicate) {
     throw createError({
       statusCode: 409,
@@ -27,20 +26,6 @@ export default defineAuthenticatedEventHandler(async (event) => {
     });
   }
 
-  // slug is globally unique — add a short random suffix on collision.
-  const originalSlug = toSlug(result.data.name);
-  let slug = originalSlug;
-  const existing = await db.query.location.findFirst({
-    where: (loc, { eq }) => eq(loc.slug, slug),
-  });
-  if (existing) {
-    slug = `${originalSlug}-${Math.random().toString(36).slice(2, 8)}`;
-  }
-
-  const [createdLocation] = await db.insert(location).values({
-    ...result.data,
-    slug,
-    userId,
-  }).returning();
-  return createdLocation;
+  const slug = await findUniqueSlug(toSlug(result.data.name));
+  return insertLocation(result.data, slug, userId);
 });

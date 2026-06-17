@@ -23,7 +23,6 @@ export const locationRelations = relations(location, ({ many }) => ({
   locationLogs: many(locationLog),
 }));
 
-export type InsertLocation = typeof location.$inferInsert;
 export type SelectLocation = typeof location.$inferSelect;
 
 export const locationSchema = z.object({
@@ -44,3 +43,5 @@ export const locationSchema = z.object({
     .min(-180, "Longitude must be between -180 and 180")
     .max(180, "Longitude must be between -180 and 180"),
 });
+
+export type InsertLocation = z.infer<typeof locationSchema>;

@@ -14,12 +14,18 @@ export const useAuthStore = defineStore("useAuthStore", () => {
   const user = computed(() => session.value?.data?.user);
   const loading = computed(() => session.value?.isPending);
 
+  function csrfHeaders() {
+    const { csrf, headerName } = useCsrf();
+    return csrf ? { [headerName]: csrf } : {};
+  }
+
   async function signIn() {
     try {
       const { error } = await authClient.signIn.social({
         provider: "github",
         callbackURL: "/dashboard",
         errorCallbackURL: "/error",
+        fetchOptions: { headers: csrfHeaders() },
       });
       if (error) {
         throw new Error(error.message ?? "Unable to start sign in.");
@@ -37,7 +43,9 @@ export const useAuthStore = defineStore("useAuthStore", () => {
 
   async function signOut() {
     try {
-      const { error } = await authClient.signOut();
+      const { error } = await authClient.signOut({
+        fetchOptions: { headers: csrfHeaders() },
+      });
       if (error) {
         throw new Error(error.message ?? "Unable to sign out.");
       }

@@ -1,31 +1,16 @@
 <script lang="ts" setup>
 import type { FormSubmitEvent } from "@nuxt/ui";
+import type { FetchError } from "ofetch";
+import type * as z from "zod";
 
-import * as z from "zod";
+import { locationSchema } from "~~/lib/db/Schema/location";
 
-const schema = z.object({
-  name: z
-    .string({ message: "Please enter the location name" })
-    .min(2, "Must be at least 2 characters")
-    .max(100, "Must be at most 100 characters"),
-  description: z
-    .string()
-    .max(1000, "Must be at most 1000 characters")
-    .optional(),
-  lat: z
-    .number({ message: "Please enter a latitude" })
-    .min(-90, "Latitude must be between -90 and 90")
-    .max(90, "Latitude must be between -90 and 90"),
-  long: z
-    .number({ message: "Please enter a longitude" })
-    .min(-180, "Longitude must be between -180 and 180")
-    .max(180, "Longitude must be between -180 and 180"),
-});
-type Schema = z.input<typeof schema>;
+type Schema = z.input<typeof locationSchema>;
 
 const state = reactive<Partial<Schema>>({ name: "", description: "", lat: undefined, long: undefined });
 const form = useTemplateRef("form");
 const toast = useToast();
+const loading = ref(false);
 
 const isDirty = computed(() =>
   state.name !== ""
@@ -40,8 +25,27 @@ function resetForm() {
 }
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-  toast.add({ title: "Location added", description: `${event.data.name} has been saved.`, color: "success" });
-  resetForm();
+  try {
+    loading.value = true;
+    await $fetch("/api/locations", { method: "POST", body: event.data });
+    toast.add({ title: "Location added", description: `${event.data.name} has been saved.`, color: "success" });
+    resetForm();
+  }
+  catch (e) {
+    const error = e as FetchError;
+    const titles: Record<number, string> = {
+      401: "Please log in",
+      422: "Invalid location details",
+    };
+    toast.add({
+      title: titles[error.statusCode ?? 0] ?? "Could not add location",
+      description: error.statusMessage ?? "Something went wrong. Please try again.",
+      color: "error",
+    });
+  }
+  finally {
+    loading.value = false;
+  }
 }
 
 const showLeaveModal = ref(false);
@@ -68,7 +72,7 @@ function resolveLeave(leave: boolean) {
   <div class="add-location-form-container">
     <UForm
       ref="form"
-      :schema="schema"
+      :schema="locationSchema"
       :state="state"
 
       class="add-location-form"
@@ -114,11 +118,19 @@ function resolveLeave(leave: boolean) {
       </div>
 
       <div class="add-location-form__actions">
-        <UButton type="submit" icon="tabler:plus">
+        <UButton
+          type="submit"
+          icon="tabler:plus"
+          :loading="loading"
+        >
           Add Location
         </UButton>
 
-        <UButton variant="outline" @click="resetForm">
+        <UButton
+          variant="outline"
+          :disabled="loading"
+          @click="resetForm"
+        >
           Clear
         </UButton>
       </div>

@@ -1,8 +1,5 @@
 <script setup lang="ts">
-const { data: locations, status } = await useFetch("/api/locations", {
-  lazy: true,
-  default: () => [],
-});
+const { locations, locationsStatus } = storeToRefs(UseLocationsStore());
 </script>
 
 <template>
@@ -26,7 +23,7 @@ const { data: locations, status } = await useFetch("/api/locations", {
         />
       </header>
 
-      <div v-if="status === 'pending'" class="location-grid">
+      <div v-if="locationsStatus === 'pending' && !locations?.length" class="location-grid">
         <USkeleton
           v-for="n in 6"
           :key="n"
@@ -34,7 +31,7 @@ const { data: locations, status } = await useFetch("/api/locations", {
         />
       </div>
 
-      <div v-else-if="locations.length" class="location-grid">
+      <div v-else-if="locations?.length" class="location-grid">
         <LocationCard
           v-for="location in locations"
           :key="location.id"

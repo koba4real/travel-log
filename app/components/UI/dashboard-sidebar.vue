@@ -3,6 +3,7 @@ import type { NavigationMenuItem } from "@nuxt/ui";
 
 const authStore = useAuthStore();
 const route = useRoute();
+const { locations, locationsStatus } = storeToRefs(UseLocationsStore());
 
 const items = computed<NavigationMenuItem[][]>(() => [
   [{
@@ -30,6 +31,16 @@ const items = computed<NavigationMenuItem[][]>(() => [
     onSelect: () => authStore.signOut(),
   }],
 ]);
+const locationItems = computed<NavigationMenuItem[]>(() =>
+  (locations.value ?? []).map(location => ({
+    label: location.name,
+    icon: "tabler:map-pin",
+  })),
+);
+const locationsPending = computed(() =>
+  (locationsStatus.value === "idle" || locationsStatus.value === "pending")
+  && !locations.value?.length,
+);
 </script>
 
 <template>
@@ -62,6 +73,26 @@ const items = computed<NavigationMenuItem[][]>(() => [
         orientation="vertical"
       />
 
+      <!-- Middle section: user's locations -->
+      <div class="sidebar__locations">
+        <template v-if="locationsPending">
+          <USkeleton
+            v-for="n in 4"
+            :key="n"
+            class="sidebar__skeleton"
+          />
+        </template>
+        <UNavigationMenu
+          v-else-if="locationItems.length"
+          :collapsed="collapsed"
+          :items="locationItems"
+          orientation="vertical"
+        />
+        <p v-else-if="!collapsed" class="sidebar__empty">
+          No locations yet
+        </p>
+      </div>
+
       <UNavigationMenu
         :collapsed="collapsed"
         :items="items[1]"
@@ -82,5 +113,15 @@ const items = computed<NavigationMenuItem[][]>(() => [
 
 .sidebar__nav--bottom {
   margin-top: auto;
+}
+.sidebar__skeleton {
+  height: 2.5rem;
+  margin-block: 0.25rem;
+}
+.sidebar__empty {
+  font-size: 0.875rem;
+  color: var(--ui-text-muted);
+  text-align: center;
+  margin-block-start: 0.5rem;
 }
 </style>

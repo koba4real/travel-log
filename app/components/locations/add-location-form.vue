@@ -7,6 +7,7 @@ import { locationSchema } from "~~/lib/db/Schema/location";
 
 type Schema = z.input<typeof locationSchema>;
 const { $csrfFetch } = useNuxtApp();
+const locationsStore = UseLocationsStore();
 const state = reactive<Partial<Schema>>({ name: "", description: "", lat: undefined, long: undefined });
 const form = useTemplateRef("form");
 const toast = useToast();
@@ -28,6 +29,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
   try {
     loading.value = true;
     await $csrfFetch("/api/locations", { method: "POST", body: event.data });
+    await locationsStore.refreshLocations();
 
     toast.add({ title: "Location added", description: `${event.data.name} has been saved.`, color: "success" });
     resetForm();

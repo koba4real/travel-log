@@ -10,7 +10,11 @@ const style = computed(() =>
 // Brescia, Italy — MapLibre expects [lng, lat]
 const center = [10.211802, 45.541553] as LngLatLike;
 const zoom = 4;
+
 const mapStore = UseMapStore();
+onMounted(() => {
+  mapStore.init();
+});
 </script>
 
 <template>

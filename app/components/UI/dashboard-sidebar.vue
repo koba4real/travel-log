@@ -34,13 +34,10 @@ const items = computed<NavigationMenuItem[][]>(() => [
 const locationItems = computed<NavigationMenuItem[]>(() =>
   (locations.value ?? []).map(location => ({
     label: location.name,
-    icon: "tabler:map-pin",
+    icon: "tabler:map-pin-filled",
   })),
 );
-const locationsPending = computed(() =>
-  (locationsStatus.value === "idle" || locationsStatus.value === "pending")
-  && !locations.value?.length,
-);
+const locationsPending = computed(() => locationsStatus.value === "pending");
 </script>
 
 <template>

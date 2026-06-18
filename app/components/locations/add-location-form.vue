@@ -33,7 +33,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
     toast.add({ title: "Location added", description: `${event.data.name} has been saved.`, color: "success" });
     resetForm();
-    navigateTo("/dashboard");
+    navigateTo("/dashboard/location");
   }
   catch (e) {
     const error = e as FetchError;

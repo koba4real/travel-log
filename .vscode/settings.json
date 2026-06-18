@@ -59,6 +59,7 @@
     "esbuild",
     "kbds",
     "lucide",
-    "nuxt"
+    "nuxt",
+    "tabler"
   ]
 }

@@ -68,6 +68,7 @@ const locationsPending = computed(() => locationsStatus.value === "pending");
         :collapsed="collapsed"
         :items="items[0]"
         orientation="vertical"
+        :tooltip="true"
       />
 
       <!-- Middle section: user's locations -->
@@ -84,6 +85,7 @@ const locationsPending = computed(() => locationsStatus.value === "pending");
           :collapsed="collapsed"
           :items="locationItems"
           orientation="vertical"
+          :tooltip="true"
         />
         <p v-else-if="!collapsed" class="sidebar__empty">
           No locations yet
@@ -95,6 +97,7 @@ const locationsPending = computed(() => locationsStatus.value === "pending");
         :items="items[1]"
         orientation="vertical"
         class="sidebar__nav--bottom"
+        :tooltip="true"
       />
     </template>
   </UDashboardSidebar>

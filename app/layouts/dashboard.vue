@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 const authStore = useAuthStore();
-await authStore.init();
+const locationsStore = UseLocationsStore();
+await Promise.all([
+  authStore.init(),
+  locationsStore.refreshLocations(),
+]);
 </script>
 
 <template>

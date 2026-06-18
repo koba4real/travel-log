@@ -22,6 +22,7 @@
     "db:shell": "tursodb local.db"
   },
   "dependencies": {
+    "@indoorequal/vue-maplibre-gl": "^8.4.2",
     "@libsql/client": "^0.17.3",
     "@nuxt/eslint": "1.15.2",
     "@nuxt/icon": "^2.2.3",

@@ -8,3 +8,11 @@ export type MapPoint = {
   name: string;
   description?: string;
 } & LngLatItem;
+
+export type NominatimResult = {
+  place_id: number;
+  display_name: string;
+  name: string;
+  lat: string;
+  lon: string;
+};

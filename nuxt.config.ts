@@ -8,6 +8,11 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
   css: ["~/assets/css/main.css"],
+  runtimeConfig: {
+    // Nominatim (OpenStreetMap) is keyless but its usage policy requires an
+    // identifying User-Agent. Override per environment via NUXT_NOMINATIM_USER_AGENT.
+    nominatimUserAgent: "nuxt-travel-log/1.0 (https://github.com/koba/travel-log)",
+  },
   modules: [
     "@nuxt/eslint",
     "@nuxt/ui",

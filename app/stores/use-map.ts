@@ -16,6 +16,15 @@ export const UseMapStore = defineStore("UseMapStore", () => {
     selectedMapPoint.value = point;
   }
 
+  // Move the draft marker to a searched location and zoom the map into it.
+  function goToSearchResult(point: MapPoint, zoom = 14) {
+    addedPoint.value = point;
+    map.value?.map?.flyTo({
+      center: [point.lng, point.lat],
+      zoom,
+    });
+  }
+
   async function init() {
     if (map.value)
       return;
@@ -80,6 +89,7 @@ export const UseMapStore = defineStore("UseMapStore", () => {
     addedPoint,
     isLoading,
     selectedMapPointWithoutFlyTo,
+    goToSearchResult,
     init,
   };
 });

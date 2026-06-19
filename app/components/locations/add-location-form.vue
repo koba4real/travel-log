@@ -71,6 +71,14 @@ effect(() => {
     state.long = mapStore.addedPoint.lng;
   }
 });
+
+// A location picked from the search box: fill the form and zoom the map into it.
+function onSearchSelect(location: { name: string; lat: number; lng: number }) {
+  state.name = location.name;
+  state.lat = location.lat;
+  state.long = location.lng;
+  mapStore.goToSearchResult({ id: -1, ...location });
+}
 </script>
 
 <template>
@@ -134,6 +142,7 @@ effect(() => {
         </UButton>
       </div>
     </UForm>
+    <SearchLocation class="add-location-form__search" @select="onSearchSelect" />
 
     <UModal
       v-model:open="showLeaveModal"
@@ -250,5 +259,9 @@ effect(() => {
   font-weight: 600;
   letter-spacing: 0.01em;
   color: var(--ui-text-highlighted);
+}
+
+.add-location-form__search {
+  margin-top: 1.5rem;
 }
 </style>

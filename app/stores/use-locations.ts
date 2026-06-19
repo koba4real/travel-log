@@ -18,7 +18,8 @@ export const UseLocationsStore = defineStore("UseLocationsStore", () => {
     (newLocations) => {
       mapStore.mapPoints = (newLocations ?? []).map((location): MapPoint => ({
         id: location.id,
-        label: location.name,
+        name: location.name,
+        description: location.description || "no desc",
         lat: location.lat,
         lng: location.long,
       }));

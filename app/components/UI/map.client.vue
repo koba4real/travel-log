@@ -31,14 +31,24 @@ onMounted(() => {
         :coordinates="[point.lng, point.lat]"
       >
         <template #marker>
-          <UTooltip :text="point.label">
+          <UTooltip :text="point.name" :open="mapStore.selectedMapPoint?.id === point.id ? true : undefined">
             <Icon
               name="tabler:map-pin-filled"
               size="30"
-              class="text-secondary-500"
+              :class="mapStore.selectedMapPoint?.id === point.id ? 'text-primary-500' : 'text-secondary-500'"
+              @mouseenter="mapStore.selectedMapPoint = point"
+              @mouseleave="mapStore.selectedMapPoint = null"
             />
           </UTooltip>
         </template>
+        <mgl-popup>
+          <h3 class="popup__title">
+            {{ point.name }}
+          </h3>
+          <p v-if="point.description" class="popup__description">
+            {{ point.description }}
+          </p>
+        </mgl-popup>
       </mgl-marker>
     </MglMap>
 
@@ -91,5 +101,32 @@ onMounted(() => {
   to {
     transform: rotate(360deg);
   }
+}
+
+/* --- Popup (theme the default maplibre popup for light/dark) --- */
+:deep(.maplibregl-popup-content) {
+  border-radius: 0.75rem;
+  background: var(--ui-bg);
+  color: var(--ui-text);
+  box-shadow: 0 8px 20px -6px rgb(0 0 0 / 0.3);
+}
+
+:deep(.maplibregl-popup-close-button) {
+  padding: 0 0.4rem;
+  font-size: 1.1rem;
+  color: var(--ui-text-muted);
+}
+
+.popup__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ui-text);
+}
+
+.popup__description {
+  margin: 0.25rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--ui-text-muted);
 }
 </style>

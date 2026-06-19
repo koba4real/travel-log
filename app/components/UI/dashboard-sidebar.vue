@@ -89,6 +89,7 @@ const locationsPending = computed(() => locationsStatus.value === "pending");
               variant="ghost"
               block
               :square="collapsed"
+              :class="{ sidebar__location: !collapsed }"
               @mouseenter="mapStore.selectedMapPoint = point"
               @mouseleave="mapStore.selectedMapPoint = null"
             />
@@ -122,6 +123,12 @@ const locationsPending = computed(() => locationsStatus.value === "pending");
   display: flex;
   flex-direction: column;
   gap: 0.125rem;
+}
+
+/* Left-align the label/icon to match the nav menu items above
+   (block buttons default to justify-center). */
+.sidebar__location {
+  justify-content: flex-start;
 }
 
 .sidebar__nav--bottom {

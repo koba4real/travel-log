@@ -1,6 +1,8 @@
 <script lang="ts" setup>
-import type { LngLatLike } from "maplibre-gl";
+import type { MglEvent } from "@indoorequal/vue-maplibre-gl";
+import type { LngLat, LngLatLike } from "maplibre-gl";
 
+const mapStore = UseMapStore();
 const colorMode = useColorMode();
 const style = computed(() =>
   colorMode.value === "dark"
@@ -11,7 +13,18 @@ const style = computed(() =>
 const center = [10.211802, 45.541553] as LngLatLike;
 const zoom = 4;
 
-const mapStore = UseMapStore();
+function updateAddedPointCoordinates(coordinates: LngLat) {
+  if (mapStore.addedPoint) {
+    mapStore.addedPoint.lat = coordinates.lat;
+    mapStore.addedPoint.lng = coordinates.lng;
+  }
+}
+function onMapDoubleClick(event: MglEvent<"dblclick">) {
+  if (mapStore.addedPoint) {
+    mapStore.addedPoint.lat = event.event.lngLat.lat;
+    mapStore.addedPoint.lng = event.event.lngLat.lng;
+  }
+}
 onMounted(() => {
   mapStore.init();
 });
@@ -23,8 +36,30 @@ onMounted(() => {
       :map-style="style"
       :center="center"
       :zoom="zoom"
+      @map:dblclick="onMapDoubleClick"
     >
       <MglNavigationControl />
+      <mgl-marker
+        v-if="mapStore.addedPoint"
+        :draggable="true"
+        :coordinates="[mapStore.addedPoint?.lng ?? 10.211802, mapStore.addedPoint?.lat ?? 45.541553]"
+        @update:coordinates="updateAddedPointCoordinates"
+      >
+        <template #marker>
+          <UTooltip>
+            <Icon
+              name="tabler:map-pin-filled"
+              size="40"
+              class="marker marker--draft"
+            />
+          </UTooltip>
+        </template>
+        <mgl-popup>
+          <h3 class="popup__title">
+            please drag the marker to the location
+          </h3>
+        </mgl-popup>
+      </mgl-marker>
       <mgl-marker
         v-for="point in mapStore.mapPoints"
         :key="point.id"
@@ -75,6 +110,17 @@ onMounted(() => {
 
 .marker {
   cursor: pointer;
+}
+
+/* The draggable "pick a spot" pin — stands out from the saved markers. */
+.marker--draft {
+  color: var(--ui-error);
+  cursor: grab;
+  filter: drop-shadow(0 2px 6px color-mix(in oklab, var(--ui-error) 55%, transparent));
+}
+
+.marker--draft:active {
+  cursor: grabbing;
 }
 
 .map__loading {

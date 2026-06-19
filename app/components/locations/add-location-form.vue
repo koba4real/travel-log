@@ -8,6 +8,7 @@ import { locationSchema } from "~~/lib/db/Schema/location";
 type Schema = z.input<typeof locationSchema>;
 const { $csrfFetch } = useNuxtApp();
 const locationsStore = UseLocationsStore();
+const mapStore = UseMapStore();
 const state = reactive<Partial<Schema>>({ name: "", description: "", lat: undefined, long: undefined });
 const form = useTemplateRef("form");
 const toast = useToast();
@@ -15,13 +16,10 @@ const loading = ref(false);
 
 const isDirty = computed(() =>
   state.name !== ""
-  || state.lat !== undefined
-  || state.long !== undefined
-  || state.description !== "",
-);
+  || state.description !== "");
 
 function resetForm() {
-  Object.assign(state, { name: "", description: "", lat: undefined, long: undefined });
+  Object.assign(state, { name: "", description: "" });
   form.value?.clear();
 }
 
@@ -67,6 +65,12 @@ function resolveLeave(leave: boolean) {
     navigateTo(leaveTo);
   }
 }
+effect(() => {
+  if (mapStore.addedPoint) {
+    state.lat = mapStore.addedPoint.lat;
+    state.long = mapStore.addedPoint.lng;
+  }
+});
 </script>
 
 <template>
@@ -82,6 +86,7 @@ function resolveLeave(leave: boolean) {
       <UFormField label="Location Name" name="name">
         <UInput
           v-model="state.name"
+          icon="tabler:map-pin"
           placeholder="Enter location name"
           class="add-location-form__control"
         />
@@ -96,26 +101,19 @@ function resolveLeave(leave: boolean) {
         />
       </UFormField>
 
-      <div class="add-location-form__grid">
-        <UFormField label="Latitude" name="lat">
-          <UInput
-            v-model.number="state.lat"
-            type="number"
-            step="any"
-            placeholder="-90 to 90"
-            class="add-location-form__control"
-          />
-        </UFormField>
+      <div class="map-hint">
+        <Icon name="tabler:hand-finger" class="map-hint__icon" />
+        <span>
+          You can also set the location by dragging the
+          <Icon name="tabler:map-pin-filled" class="map-hint__pin" />
+          marker on the map, or double click.
+        </span>
+      </div>
 
-        <UFormField label="Longitude" name="long">
-          <UInput
-            v-model.number="state.long"
-            type="number"
-            step="any"
-            placeholder="-180 to 180"
-            class="add-location-form__control"
-          />
-        </UFormField>
+      <div v-if="state.lat && state.long" class="coord-readout">
+        <Icon name="tabler:current-location" class="coord-readout__icon" />
+        <span class="coord-readout__label">Marker position</span>
+        <span class="coord-readout__value">{{ state.lat.toFixed(4) }}, {{ state.long.toFixed(4) }}</span>
       </div>
 
       <div class="add-location-form__actions">
@@ -163,12 +161,7 @@ function resolveLeave(leave: boolean) {
 </template>
 
 <style scoped>
-.add-location-page__title {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--ui-text-highlighted);
-}
-
+/* Used by the "unsaved changes" modal body. */
 .add-location-page__subtitle {
   margin-top: 0.375rem;
   color: var(--ui-text-muted);
@@ -201,5 +194,61 @@ function resolveLeave(leave: boolean) {
   display: flex;
   gap: 0.5rem;
   margin-top: 0.5rem;
+}
+
+/* "Drag the marker" hint — a soft, dashed callout. */
+.map-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  padding: 0.75rem 0.875rem;
+  border: 1px dashed var(--ui-border-accented);
+  border-radius: 0.75rem;
+  background: color-mix(in oklab, var(--ui-bg-muted) 60%, transparent);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--ui-text-muted);
+}
+
+.map-hint__icon {
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+  font-size: 1.125rem;
+  color: var(--ui-primary);
+}
+
+.map-hint__pin {
+  vertical-align: -0.15em;
+  color: var(--ui-error);
+}
+
+/* Live coordinate readout — a compact pill with monospaced values. */
+.coord-readout {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  align-self: flex-start;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--ui-border);
+  border-radius: 999px;
+  background: var(--ui-bg-elevated);
+  font-size: 0.8125rem;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+}
+
+.coord-readout__icon {
+  font-size: 1rem;
+  color: var(--ui-primary);
+}
+
+.coord-readout__label {
+  color: var(--ui-text-muted);
+}
+
+.coord-readout__value {
+  font-family: ui-monospace, "SFMono-Regular", "Menlo", monospace;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--ui-text-highlighted);
 }
 </style>

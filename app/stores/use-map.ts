@@ -45,7 +45,8 @@ export const UseMapStore = defineStore("UseMapStore", () => {
         (acc, point) => acc.extend([point.lng, point.lat]),
         new LngLatBounds(),
       );
-
+      if (selectedMapPoint.value)
+        return;
       map.value?.map?.fitBounds(bounds, {
         padding: 60,
         maxZoom: 10,

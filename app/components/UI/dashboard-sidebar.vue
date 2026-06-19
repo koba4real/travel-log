@@ -57,6 +57,11 @@ const locationLinks = computed<NavigationMenuItem[]>(() => {
       icon: "tabler:pencil",
       to: `/dashboard/location/${slug}/edit`,
     },
+    {
+      label: "Add log",
+      icon: "tabler:circle-plus",
+      to: `/dashboard/location/${slug}/add`,
+    },
   ];
 });
 </script>

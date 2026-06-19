@@ -6,6 +6,9 @@ export type LngLatItem = {
 export type MapPoint = {
   id: number;
   name: string;
+  // Saved locations carry a slug to link back to their detail page;
+  // draft/search markers don't, so it's optional.
+  slug?: string;
   description?: string;
 } & LngLatItem;
 

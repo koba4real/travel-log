@@ -3,7 +3,8 @@ import type { NavigationMenuItem } from "@nuxt/ui";
 
 const authStore = useAuthStore();
 const route = useRoute();
-const { locations, locationsStatus } = storeToRefs(UseLocationsStore());
+const { locationsStatus } = storeToRefs(UseLocationsStore());
+const mapStore = UseMapStore();
 
 const items = computed<NavigationMenuItem[][]>(() => [
   [{
@@ -31,12 +32,6 @@ const items = computed<NavigationMenuItem[][]>(() => [
     onSelect: () => authStore.signOut(),
   }],
 ]);
-const locationItems = computed<NavigationMenuItem[]>(() =>
-  (locations.value ?? []).map(location => ({
-    label: location.name,
-    icon: "tabler:map-pin-filled",
-  })),
-);
 const locationsPending = computed(() => locationsStatus.value === "pending");
 </script>
 
@@ -80,13 +75,25 @@ const locationsPending = computed(() => locationsStatus.value === "pending");
             class="sidebar__skeleton"
           />
         </template>
-        <UNavigationMenu
-          v-else-if="locationItems.length"
-          :collapsed="collapsed"
-          :items="locationItems"
-          orientation="vertical"
-          :tooltip="true"
-        />
+        <template v-else-if="mapStore.mapPoints.length">
+          <UTooltip
+            v-for="point in mapStore.mapPoints"
+            :key="point.id"
+            :text="point.name"
+            :disabled="!collapsed"
+          >
+            <UButton
+              :label="collapsed ? undefined : point.name"
+              icon="tabler:map-pin-filled"
+              :color="mapStore.selectedMapPoint?.id === point.id ? 'primary' : 'neutral'"
+              variant="ghost"
+              block
+              :square="collapsed"
+              @mouseenter="mapStore.selectedMapPoint = point"
+              @mouseleave="mapStore.selectedMapPoint = null"
+            />
+          </UTooltip>
+        </template>
         <p v-else-if="!collapsed" class="sidebar__empty">
           No locations yet
         </p>
@@ -109,6 +116,12 @@ const locationsPending = computed(() => locationsStatus.value === "pending");
   align-items: center;
   gap: 0.125rem;
   margin-inline-start: auto;
+}
+
+.sidebar__locations {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
 }
 
 .sidebar__nav--bottom {

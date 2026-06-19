@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { locations, locationsStatus } = storeToRefs(UseLocationsStore());
+const mapStore = UseMapStore();
 </script>
 
 <template>
@@ -54,6 +55,8 @@ const { locations, locationsStatus } = storeToRefs(UseLocationsStore());
               v-for="location in locations"
               :key="location.id"
               :location="location"
+              @mouseenter="mapStore.selectedMapPoint = mapStore.mapPoints.find((p) => p.id === location.id) ?? null"
+              @mouseleave="mapStore.selectedMapPoint = null"
             />
           </div>
 

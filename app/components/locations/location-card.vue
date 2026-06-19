@@ -56,6 +56,7 @@ defineProps<{
     box-shadow 0.25s ease,
     border-color 0.25s ease;
   will-change: transform;
+  cursor: pointer;
 }
 
 .location-card:hover {

@@ -84,6 +84,13 @@ onMounted(() => {
           <p v-if="point.description" class="popup__description">
             {{ point.description }}
           </p>
+          <nuxt-link
+            :to="`/dashboard/location/${point.slug}`"
+            class="popup__link"
+          >
+            View details
+            <Icon name="tabler:arrow-right" class="popup__link-icon" />
+          </nuxt-link>
         </mgl-popup>
       </mgl-marker>
     </MglMap>
@@ -156,28 +163,98 @@ onMounted(() => {
 
 /* --- Popup (theme the default maplibre popup for light/dark) --- */
 :deep(.maplibregl-popup-content) {
-  border-radius: 0.75rem;
+  min-width: 11rem;
+  padding: 0.85rem 1rem 0.95rem;
+  border: 1px solid var(--ui-border);
+  border-radius: 0.875rem;
   background: var(--ui-bg);
   color: var(--ui-text);
-  box-shadow: 0 8px 20px -6px rgb(0 0 0 / 0.3);
+  box-shadow: 0 14px 32px -12px rgb(0 0 0 / 0.5);
+}
+
+/* Match the little pointer triangle to the popup background, whichever
+   side maplibre anchors it to. */
+:deep(.maplibregl-popup-anchor-bottom .maplibregl-popup-tip),
+:deep(.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip),
+:deep(.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip) {
+  border-top-color: var(--ui-bg);
+}
+
+:deep(.maplibregl-popup-anchor-top .maplibregl-popup-tip),
+:deep(.maplibregl-popup-anchor-top-left .maplibregl-popup-tip),
+:deep(.maplibregl-popup-anchor-top-right .maplibregl-popup-tip) {
+  border-bottom-color: var(--ui-bg);
+}
+
+:deep(.maplibregl-popup-anchor-left .maplibregl-popup-tip) {
+  border-right-color: var(--ui-bg);
+}
+
+:deep(.maplibregl-popup-anchor-right .maplibregl-popup-tip) {
+  border-left-color: var(--ui-bg);
 }
 
 :deep(.maplibregl-popup-close-button) {
-  padding: 0 0.4rem;
-  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 0.3rem;
+  right: 0.3rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 1.2rem;
+  line-height: 1;
   color: var(--ui-text-muted);
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+:deep(.maplibregl-popup-close-button:hover) {
+  background: var(--ui-bg-elevated);
+  color: var(--ui-text-highlighted);
 }
 
 .popup__title {
   margin: 0;
-  font-size: 1rem;
+  padding-right: 1.25rem;
+  font-size: 1.05rem;
   font-weight: 600;
-  color: var(--ui-text);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--ui-text-highlighted);
 }
 
 .popup__description {
-  margin: 0.25rem 0 0;
+  margin: 0.3rem 0 0;
   font-size: 0.8125rem;
+  line-height: 1.45;
   color: var(--ui-text-muted);
+}
+
+.popup__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.85rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 0.55rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ui-primary);
+  background: color-mix(in oklab, var(--ui-primary) 12%, transparent);
+  transition:
+    gap 0.15s ease,
+    background 0.15s ease;
+}
+
+.popup__link:hover {
+  gap: 0.45rem;
+  background: color-mix(in oklab, var(--ui-primary) 20%, transparent);
+}
+
+.popup__link-icon {
+  font-size: 0.95rem;
 }
 </style>

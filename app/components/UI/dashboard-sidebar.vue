@@ -33,6 +33,32 @@ const items = computed<NavigationMenuItem[][]>(() => [
   }],
 ]);
 const locationsPending = computed(() => locationsStatus.value === "pending");
+
+const locationLinks = computed<NavigationMenuItem[]>(() => {
+  const { slug } = route.params;
+  if (typeof slug !== "string")
+    return [];
+
+  const name = mapStore.mapPoints.find(point => point.slug === slug)?.name;
+  return [
+    {
+      label: "Locations",
+      icon: "tabler:arrow-left",
+      to: "/dashboard/location",
+    },
+    {
+      label: name ?? "Location",
+      icon: "tabler:map-pin-filled",
+      to: `/dashboard/location/${slug}`,
+
+    },
+    {
+      label: "Edit location",
+      icon: "tabler:pencil",
+      to: `/dashboard/location/${slug}/edit`,
+    },
+  ];
+});
 </script>
 
 <template>
@@ -43,70 +69,83 @@ const locationsPending = computed(() => locationsStatus.value === "pending");
   >
     <template #default="{ collapsed }">
       <UDashboardSidebarCollapse />
-      <UButton
-        :label="collapsed ? undefined : 'Search...'"
-        icon="tabler:search"
-        color="neutral"
-        variant="outline"
-        block
-        :square="collapsed"
-      >
-        <template v-if="!collapsed" #trailing>
-          <div class="sidebar__kbd">
-            <UKbd value="meta" variant="subtle" />
-            <UKbd value="K" variant="subtle" />
-          </div>
-        </template>
-      </UButton>
 
+      <!-- On a location detail page, the sidebar is just that location's links. -->
       <UNavigationMenu
+        v-if="locationLinks.length"
         :collapsed="collapsed"
-        :items="items[0]"
+        :items="locationLinks"
         orientation="vertical"
         :tooltip="true"
       />
 
-      <!-- Middle section: user's locations -->
-      <div class="sidebar__locations">
-        <template v-if="locationsPending">
-          <USkeleton
-            v-for="n in 4"
-            :key="n"
-            class="sidebar__skeleton"
-          />
-        </template>
-        <template v-else-if="mapStore.mapPoints.length">
-          <UTooltip
-            v-for="point in mapStore.mapPoints"
-            :key="point.id"
-            :text="point.name"
-            :disabled="!collapsed"
-          >
-            <UButton
-              :label="collapsed ? undefined : point.name"
-              icon="tabler:map-pin-filled"
-              :color="mapStore.selectedMapPoint?.id === point.id ? 'primary' : 'neutral'"
-              variant="ghost"
-              block
-              :square="collapsed"
-              :class="{ sidebar__location: !collapsed }"
-              @mouseenter="mapStore.selectedMapPoint = point"
-              @mouseleave="mapStore.selectedMapPoint = null"
+      <!-- Otherwise: search, primary nav, the location list, account controls. -->
+      <template v-else>
+        <UButton
+          :label="collapsed ? undefined : 'Search...'"
+          icon="tabler:search"
+          color="neutral"
+          variant="outline"
+          block
+          :square="collapsed"
+        >
+          <template v-if="!collapsed" #trailing>
+            <div class="sidebar__kbd">
+              <UKbd value="meta" variant="subtle" />
+              <UKbd value="K" variant="subtle" />
+            </div>
+          </template>
+        </UButton>
+
+        <UNavigationMenu
+          :collapsed="collapsed"
+          :items="items[0]"
+          orientation="vertical"
+          :tooltip="true"
+        />
+
+        <div class="sidebar__locations">
+          <template v-if="locationsPending">
+            <USkeleton
+              v-for="n in 4"
+              :key="n"
+              class="sidebar__skeleton"
             />
-          </UTooltip>
-        </template>
-        <p v-else-if="!collapsed" class="sidebar__empty">
-          No locations yet
-        </p>
-      </div>
+          </template>
+          <template v-else-if="mapStore.mapPoints.length">
+            <UTooltip
+              v-for="point in mapStore.mapPoints"
+              :key="point.id"
+              :text="point.name"
+              :disabled="!collapsed"
+            >
+              <UButton
+                :label="collapsed ? undefined : point.name"
+                icon="tabler:map-pin-filled"
+                :color="mapStore.selectedMapPoint?.id === point.id ? 'primary' : 'neutral'"
+                variant="ghost"
+                block
+                :square="collapsed"
+                :class="{ sidebar__location: !collapsed }"
+                @click="navigateTo(`/dashboard/location/${point.slug}`)"
+                @mouseenter="mapStore.selectedMapPoint = point"
+                @mouseleave="mapStore.selectedMapPoint = null"
+              />
+            </UTooltip>
+          </template>
+          <p v-else-if="!collapsed" class="sidebar__empty">
+            No locations yet
+          </p>
+        </div>
 
-      <UNavigationMenu
-        :collapsed="collapsed"
-        :items="items[1]"
-        orientation="vertical"
-        class="sidebar__nav--bottom"
-        :tooltip="true"
-      />
+        <UNavigationMenu
+          :collapsed="collapsed"
+          :items="items[1]"
+          orientation="vertical"
+          class="sidebar__nav--bottom"
+          :tooltip="true"
+        />
+      </template>
     </template>
   </UDashboardSidebar>
 </template>

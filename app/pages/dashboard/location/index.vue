@@ -55,6 +55,7 @@ const mapStore = UseMapStore();
               v-for="location in locations"
               :key="location.id"
               :location="location"
+              @click="navigateTo(`/dashboard/location/${location.slug}`)"
               @mouseenter="mapStore.selectedMapPoint = mapStore.mapPoints.find((p) => p.id === location.id) ?? null"
               @mouseleave="mapStore.selectedMapPoint = null"
             />

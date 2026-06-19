@@ -35,9 +35,10 @@ onMounted(() => {
             <Icon
               name="tabler:map-pin-filled"
               size="30"
+              class="marker"
               :class="mapStore.selectedMapPoint?.id === point.id ? 'text-primary-500' : 'text-secondary-500'"
-              @mouseenter="mapStore.selectedMapPoint = point"
-              @mouseleave="mapStore.selectedMapPoint = null"
+              @mouseenter="mapStore.selectedMapPointWithoutFlyTo(point) "
+              @mouseleave="mapStore.selectedMapPointWithoutFlyTo(null)"
             />
           </UTooltip>
         </template>
@@ -70,6 +71,10 @@ onMounted(() => {
   width: 100%;
   border-radius: 1rem;
   overflow: hidden;
+}
+
+.marker {
+  cursor: pointer;
 }
 
 .map__loading {

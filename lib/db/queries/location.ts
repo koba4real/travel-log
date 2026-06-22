@@ -2,6 +2,12 @@ import type { InsertLocation } from "~~/lib/db/Schema/location";
 
 import db from "~~/lib/db";
 import { location } from "~~/lib/db/Schema/location";
+import { eq } from "drizzle-orm";
+import slugify from "slugify";
+
+export function toSlug(name: string) {
+  return slugify(name, { lower: true, strict: true, trim: true });
+}
 
 export async function findLocations(userId: number) {
   return db.query.location.findMany({
@@ -38,4 +44,12 @@ export async function insertLocation(data: InsertLocation, slug: string, userId:
     userId,
   }).returning();
   return createdLocation;
+}
+
+export async function updateLocation(id: number, data: InsertLocation, slug: string) {
+  const [updatedLocation] = await db.update(location)
+    .set({ ...data, slug })
+    .where(eq(location.id, id))
+    .returning();
+  return updatedLocation;
 }

@@ -12,6 +12,9 @@ const style = computed(() =>
 // Brescia, Italy — MapLibre expects [lng, lat]
 const center = [10.211802, 45.541553] as LngLatLike;
 const zoom = 4;
+const visibleMapPoints = computed(() =>
+  mapStore.mapPoints.filter(point => point.id !== mapStore.addedPoint?.id),
+);
 
 function updateAddedPointCoordinates(coordinates: LngLat) {
   if (mapStore.addedPoint) {
@@ -61,7 +64,7 @@ onMounted(() => {
         </mgl-popup>
       </mgl-marker>
       <mgl-marker
-        v-for="point in mapStore.mapPoints"
+        v-for="point in visibleMapPoints"
         :key="point.id"
         :coordinates="[point.lng, point.lat]"
       >

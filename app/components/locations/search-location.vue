@@ -3,7 +3,7 @@ import type { NominatimResult } from "~~/lib/types";
 import type { FetchError } from "ofetch";
 
 const emit = defineEmits<{
-  select: [location: { name: string; lat: number; lng: number }];
+  select: [location: { name: string; lat: number; long: number }];
 }>();
 
 const toast = useToast();
@@ -51,7 +51,7 @@ function selectResult(result: NominatimResult) {
   emit("select", {
     name: resultTitle(result),
     lat: Number(result.lat),
-    lng: Number(result.lon),
+    long: Number(result.lon),
   });
   searchResults.value = [];
   hasSearched.value = false;

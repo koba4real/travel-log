@@ -22,7 +22,7 @@ export const UseLocationsStore = defineStore("UseLocationsStore", () => {
         slug: location.slug,
         description: location.description || "no desc",
         lat: location.lat,
-        lng: location.long,
+        long: location.long,
       }));
     },
     { immediate: true },

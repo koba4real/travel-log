@@ -1,13 +1,51 @@
 <script setup lang="ts">
+import type { SelectLocation } from "~~/lib/db/Schema/location";
+import type { FetchError } from "ofetch";
+
 const slug = useRoute().params.slug as string;
 const mapStore = UseMapStore();
-// The location comes from the list we already fetch into the store.
-const { locations, locationsStatus } = storeToRefs(UseLocationsStore());
+
+const locationsStore = UseLocationsStore();
+const { locations, locationsStatus } = storeToRefs(locationsStore);
 const location = computed(() => locations.value?.find(l => l.slug === slug));
 const isLoading = computed(() => locationsStatus.value === "pending" || locationsStatus.value === "idle");
+const { $csrfFetch } = useNuxtApp();
+const toast = useToast();
 watchEffect(() => {
   mapStore.selectedMapPoint = mapStore.mapPoints.find(p => p.slug === slug) || null;
 });
+
+const showDeleteModal = ref(false);
+const isDeleting = ref(false);
+
+async function deleteLocation() {
+  try {
+    isDeleting.value = true;
+    const deletedLocation = await $csrfFetch<SelectLocation>(`/api/locations/${slug}`, { method: "DELETE" });
+    await locationsStore.refreshLocations();
+
+    toast.add({
+      title: "Location deleted",
+      description: `${deletedLocation.name} has been deleted.`,
+      color: "success",
+    });
+
+    showDeleteModal.value = false;
+    navigateTo("/dashboard/location");
+  }
+  catch (e) {
+    const error = e as FetchError;
+    toast.add({
+      title: "Could not delete location",
+      description: getFetchErrorMessage(error),
+      color: "error",
+      icon: "tabler:alert-triangle",
+    });
+  }
+  finally {
+    isDeleting.value = false;
+  }
+}
 </script>
 
 <template>
@@ -41,7 +79,7 @@ watchEffect(() => {
                   icon: 'tabler:trash',
                   color: 'error',
                   onSelect: () => {
-                    // TODO: wire up to a delete location endpoint once it exists.
+                    showDeleteModal = true;
                   },
                 },
               ]"
@@ -138,6 +176,39 @@ watchEffect(() => {
         color="primary"
       />
     </div>
+
+    <UModal
+      v-model:open="showDeleteModal"
+      title="Delete location"
+    >
+      <template #body>
+        <p class="location-logs__modal-text">
+          Are you sure you want to delete
+          <strong>{{ location?.name }}</strong>? This will also remove its logs and
+          can't be undone.
+        </p>
+      </template>
+
+      <template #footer>
+        <div class="location-logs__modal-actions">
+          <UButton
+            variant="outline"
+            :disabled="isDeleting"
+            @click="showDeleteModal = false"
+          >
+            Cancel
+          </UButton>
+          <UButton
+            color="error"
+            icon="tabler:trash"
+            :loading="isDeleting"
+            @click="deleteLocation"
+          >
+            Delete
+          </UButton>
+        </div>
+      </template>
+    </UModal>
   </div>
 </template>
 
@@ -438,5 +509,18 @@ watchEffect(() => {
   font-size: 0.925rem;
   line-height: 1.5;
   color: var(--ui-text-muted);
+}
+
+/* ---------- Delete confirmation modal ---------- */
+.location-logs__modal-text {
+  margin: 0;
+  line-height: 1.55;
+  color: var(--ui-text-muted);
+}
+
+.location-logs__modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
 }
 </style>

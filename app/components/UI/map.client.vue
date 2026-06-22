@@ -19,13 +19,13 @@ const visibleMapPoints = computed(() =>
 function updateAddedPointCoordinates(coordinates: LngLat) {
   if (mapStore.addedPoint) {
     mapStore.addedPoint.lat = coordinates.lat;
-    mapStore.addedPoint.lng = coordinates.lng;
+    mapStore.addedPoint.long = coordinates.lng;
   }
 }
 function onMapDoubleClick(event: MglEvent<"dblclick">) {
   if (mapStore.addedPoint) {
     mapStore.addedPoint.lat = event.event.lngLat.lat;
-    mapStore.addedPoint.lng = event.event.lngLat.lng;
+    mapStore.addedPoint.long = event.event.lngLat.lng;
   }
 }
 onMounted(() => {
@@ -45,7 +45,7 @@ onMounted(() => {
       <mgl-marker
         v-if="mapStore.addedPoint"
         :draggable="true"
-        :coordinates="[mapStore.addedPoint?.lng ?? 10.211802, mapStore.addedPoint?.lat ?? 45.541553]"
+        :coordinates="[mapStore.addedPoint?.long ?? 10.211802, mapStore.addedPoint?.lat ?? 45.541553]"
         @update:coordinates="updateAddedPointCoordinates"
       >
         <template #marker>
@@ -66,7 +66,7 @@ onMounted(() => {
       <mgl-marker
         v-for="point in visibleMapPoints"
         :key="point.id"
-        :coordinates="[point.lng, point.lat]"
+        :coordinates="[point.long, point.lat]"
       >
         <template #marker>
           <UTooltip :text="point.name" :open="mapStore.selectedMapPoint?.id === point.id ? true : undefined">

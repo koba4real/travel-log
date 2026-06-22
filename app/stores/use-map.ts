@@ -20,7 +20,7 @@ export const UseMapStore = defineStore("UseMapStore", () => {
   function goToSearchResult(point: MapPoint, zoom = 14) {
     addedPoint.value = point;
     map.value?.map?.flyTo({
-      center: [point.lng, point.lat],
+      center: [point.long, point.lat],
       zoom,
     });
   }
@@ -42,7 +42,7 @@ export const UseMapStore = defineStore("UseMapStore", () => {
         return;
 
       bounds = mapPoints.value.reduce(
-        (acc, point) => acc.extend([point.lng, point.lat]),
+        (acc, point) => acc.extend([point.long, point.lat]),
         new LngLatBounds(),
       );
       if (selectedMapPoint.value)
@@ -59,7 +59,7 @@ export const UseMapStore = defineStore("UseMapStore", () => {
       if (selectedMapPoint.value) {
         if (shouldFlyTo.value) {
           map.value?.map?.flyTo({
-            center: [selectedMapPoint.value.lng, selectedMapPoint.value.lat],
+            center: [selectedMapPoint.value.long, selectedMapPoint.value.lat],
             zoom: 6,
           });
         }
@@ -76,7 +76,7 @@ export const UseMapStore = defineStore("UseMapStore", () => {
     watch(addedPoint, (newPoint, oldPoint) => {
       if (newPoint && !oldPoint) {
         map.value?.map?.flyTo({
-          center: [newPoint.lng, newPoint.lat],
+          center: [newPoint.long, newPoint.lat],
           zoom: 6,
         });
       }

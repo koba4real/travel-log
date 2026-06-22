@@ -1,5 +1,5 @@
 export type LngLatItem = {
-  lng: number;
+  long: number;
   lat: number;
 };
 

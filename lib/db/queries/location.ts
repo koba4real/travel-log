@@ -53,3 +53,8 @@ export async function updateLocation(id: number, data: InsertLocation, slug: str
     .returning();
   return updatedLocation;
 }
+
+export async function deleteLocation(id: number) {
+  const [deletedLocation] = await db.delete(location).where(eq(location.id, id)).returning();
+  return deletedLocation;
+}

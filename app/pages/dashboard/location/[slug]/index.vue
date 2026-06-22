@@ -25,9 +25,39 @@ watchEffect(() => {
             <UIcon name="tabler:route" class="location-logs__eyebrow-icon" />
             Travel log
           </p>
-          <h1 class="location-logs__title">
-            {{ location.name }}
-          </h1>
+          <div class="location-logs__title-row">
+            <h1 class="location-logs__title">
+              {{ location.name }}
+            </h1>
+            <UDropdownMenu
+              :items="[
+                {
+                  label: 'Edit',
+                  icon: 'tabler:pencil',
+                  to: `/dashboard/location/${slug}/edit`,
+                },
+                {
+                  label: 'Delete',
+                  icon: 'tabler:trash',
+                  color: 'error',
+                  onSelect: () => {
+                    // TODO: wire up to a delete location endpoint once it exists.
+                  },
+                },
+              ]"
+              :content="{ align: 'start', side: 'bottom' }"
+              :ui="{ content: 'location-logs__menu' }"
+            >
+              <UButton
+                icon="tabler:dots-vertical"
+                color="neutral"
+                variant="ghost"
+                size="md"
+                class="location-logs__menu-btn"
+                aria-label="Location options"
+              />
+            </UDropdownMenu>
+          </div>
           <p v-if="location.description" class="location-logs__description">
             {{ location.description }}
           </p>
@@ -178,12 +208,34 @@ watchEffect(() => {
   font-size: 1rem;
 }
 
+.location-logs__title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .location-logs__title {
   margin: 0;
   font-size: clamp(1.625rem, 1.3rem + 1.4vw, 2.125rem);
   font-weight: 700;
   letter-spacing: -0.025em;
   color: var(--ui-text-highlighted);
+}
+
+/* Kebab trigger: subtle, lifts on hover. */
+.location-logs__menu-btn {
+  border-radius: 999px;
+  color: var(--ui-text-muted);
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.location-logs__menu-btn:hover {
+  color: var(--ui-primary);
+  background: color-mix(in oklab, var(--ui-primary) 12%, transparent);
+  transform: scale(1.08);
 }
 
 .location-logs__description {

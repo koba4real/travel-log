@@ -1,10 +1,5 @@
-import { findLocationByName, findUniqueSlug, insertLocation } from "~~/lib/db/queries/location";
+import { findLocationByName, findUniqueSlug, insertLocation, toSlug } from "~~/lib/db/queries/location";
 import { locationSchema } from "~~/lib/db/Schema/location";
-import slugify from "slugify";
-
-function toSlug(name: string) {
-  return slugify(name, { lower: true, strict: true, trim: true });
-}
 
 export default defineAuthenticatedEventHandler(async (event) => {
   const result = await readValidatedBody(event, locationSchema.safeParse);

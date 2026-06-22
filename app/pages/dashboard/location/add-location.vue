@@ -1,17 +1,4 @@
 <script setup lang="ts">
-const mapStore = UseMapStore();
-onMounted(() => {
-  mapStore.addedPoint = {
-    id: 1,
-    name: "Draft Location",
-    description: "Drag the marker to the location you want to add.",
-    lat: 45.541553,
-    lng: 10.211802,
-  };
-});
-onBeforeRouteLeave(() => {
-  mapStore.addedPoint = null;
-});
 </script>
 
 <template>
@@ -32,7 +19,7 @@ onBeforeRouteLeave(() => {
             country, state or point of interest. You can add specific times you visited
             this location after adding it.
           </p>
-          <AddLocationForm />
+          <LocationForm />
         </div>
       </section>
 

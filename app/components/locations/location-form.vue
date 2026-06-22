@@ -1,42 +1,70 @@
 <script lang="ts" setup>
 import type { FormSubmitEvent } from "@nuxt/ui";
+import type { SelectLocation } from "~~/lib/db/Schema/location";
 import type { FetchError } from "ofetch";
 import type * as z from "zod";
 
 import { locationSchema } from "~~/lib/db/Schema/location";
 
 type Schema = z.input<typeof locationSchema>;
+
+// No `location` => create mode; a `location` => edit mode.
+const props = defineProps<{ location?: SelectLocation }>();
+const isEdit = computed(() => !!props.location);
+
+// Brescia, Italy — the draft marker's starting spot when creating.
+const DEFAULT_DRAFT_POINT = { lat: 45.541553, lng: 10.211802 };
+
 const { $csrfFetch } = useNuxtApp();
 const locationsStore = UseLocationsStore();
 const mapStore = UseMapStore();
-const state = reactive<Partial<Schema>>({ name: "", description: "", lat: undefined, long: undefined });
-const form = useTemplateRef("form");
 const toast = useToast();
+const form = useTemplateRef("form");
 const loading = ref(false);
 
+const initialState: Partial<Schema> = {
+  name: props.location?.name ?? "",
+  description: props.location?.description ?? "",
+  lat: props.location?.lat ?? DEFAULT_DRAFT_POINT.lat,
+  long: props.location?.long ?? DEFAULT_DRAFT_POINT.lng,
+};
+const state = reactive<Partial<Schema>>({ ...initialState });
+
 const isDirty = computed(() =>
-  state.name !== ""
-  || state.description !== "");
+  state.name !== initialState.name
+  || (state.description ?? "") !== initialState.description
+  || state.lat !== initialState.lat
+  || state.long !== initialState.long);
 
 function resetForm() {
-  Object.assign(state, { name: "", description: "" });
+  Object.assign(state, initialState);
   form.value?.clear();
+  if (mapStore.addedPoint) {
+    mapStore.addedPoint.lat = initialState.lat!;
+    mapStore.addedPoint.lng = initialState.long!;
+  }
 }
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   try {
     loading.value = true;
-    await $csrfFetch("/api/locations", { method: "POST", body: event.data });
+    const saved = isEdit.value
+      ? await $csrfFetch<SelectLocation>(`/api/locations/${props.location!.slug}`, { method: "PATCH", body: event.data })
+      : await $csrfFetch<SelectLocation>("/api/locations", { method: "POST", body: event.data });
     await locationsStore.refreshLocations();
 
-    toast.add({ title: "Location added", description: `${event.data.name} has been saved.`, color: "success" });
+    toast.add({
+      title: isEdit.value ? "Location updated" : "Location added",
+      description: `${event.data.name} has been saved.`,
+      color: "success",
+    });
     resetForm();
-    navigateTo("/dashboard/location");
+    navigateTo(isEdit.value ? `/dashboard/location/${saved.slug}` : "/dashboard/location");
   }
   catch (e) {
     const error = e as FetchError;
     toast.add({
-      title: "Could not add location",
+      title: isEdit.value ? "Could not update location" : "Could not add location",
       description: getFetchErrorMessage(error),
       color: "error",
       icon: "tabler:alert-triangle",
@@ -65,6 +93,24 @@ function resolveLeave(leave: boolean) {
     navigateTo(leaveTo);
   }
 }
+
+// Drive the draft marker from this form: seed it on mount, clear it on leave.
+onMounted(() => {
+  mapStore.addedPoint = {
+    // Edit reuses the real id so the map can hide its (duplicate) saved marker;
+    // create uses a sentinel that won't collide with any saved location.
+    id: props.location?.id ?? -1,
+    name: props.location?.name || "Draft Location",
+    description: "Drag the marker to the location you want to add.",
+    lat: initialState.lat!,
+    lng: initialState.long!,
+  };
+});
+onUnmounted(() => {
+  mapStore.addedPoint = null;
+});
+
+// Keep the form's coordinates in step with the draft marker (drag / double-click).
 effect(() => {
   if (mapStore.addedPoint) {
     state.lat = mapStore.addedPoint.lat;
@@ -127,10 +173,10 @@ function onSearchSelect(location: { name: string; lat: number; lng: number }) {
       <div class="add-location-form__actions">
         <UButton
           type="submit"
-          icon="tabler:plus"
+          :icon="isEdit ? 'tabler:device-floppy' : 'tabler:plus'"
           :loading="loading"
         >
-          Add Location
+          {{ isEdit ? "Save changes" : "Add Location" }}
         </UButton>
 
         <UButton
@@ -138,7 +184,7 @@ function onSearchSelect(location: { name: string; lat: number; lng: number }) {
           :disabled="loading"
           @click="resetForm"
         >
-          Clear
+          {{ isEdit ? "Reset" : "Clear" }}
         </UButton>
       </div>
     </UForm>

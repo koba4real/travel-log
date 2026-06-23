@@ -6,9 +6,10 @@ const slug = useRoute().params.slug as string;
 const mapStore = UseMapStore();
 
 const locationsStore = UseLocationsStore();
-const { locations, locationsStatus } = storeToRefs(locationsStore);
+const { locations, locationsStatus, locationLogs, locationLogsStatus } = storeToRefs(locationsStore);
 const location = computed(() => locations.value?.find(l => l.slug === slug));
 const isLoading = computed(() => locationsStatus.value === "pending" || locationsStatus.value === "idle");
+
 const { $csrfFetch } = useNuxtApp();
 const toast = useToast();
 watchEffect(() => {
@@ -119,8 +120,28 @@ async function deleteLocation() {
           </div>
 
           <div class="location-logs__scroll">
-            <!-- Logs are a later story, so the location has none to show yet. -->
-            <div class="location-logs__empty">
+            <!-- loading -->
+            <div v-if="locationLogsStatus === 'pending'" class="location-logs__items">
+              <USkeleton
+                v-for="n in 4"
+                :key="n"
+                class="location-logs__skeleton"
+              />
+            </div>
+
+            <!-- list -->
+            <div v-else-if="locationLogs?.length" class="location-logs__items">
+              <LocationLogCard
+                v-for="log in locationLogs"
+                :key="log.id"
+                :log="log"
+                @mouseenter="mapStore.selectedMapPoint = mapStore.mapPoints.find((p) => p.id === log.id) ?? null"
+                @mouseleave="mapStore.selectedMapPoint = null"
+              />
+            </div>
+
+            <!-- empty -->
+            <div v-else class="location-logs__empty">
               <span class="location-logs__empty-icon-wrap">
                 <UIcon name="tabler:notebook" class="location-logs__empty-icon" />
               </span>
@@ -381,6 +402,17 @@ async function deleteLocation() {
   overflow-y: auto;
   padding-right: 0.25rem;
   padding-bottom: 0.5rem;
+}
+
+.location-logs__items {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.location-logs__skeleton {
+  height: 8rem;
+  border-radius: 1rem;
 }
 
 /* ---------- Empty state (centered in the scroll area) ---------- */

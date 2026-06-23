@@ -11,7 +11,7 @@ const isLoading = computed(() => locationsStatus.value === "pending" || location
   <div class="edit-location-page">
     <!-- loading -->
     <div v-if="isLoading" class="edit-location__loading">
-      <Icon name="tabler:loader-2" class="edit-location__spinner" />
+      <Icon name="tabler:loader-2" class="spinner" />
     </div>
 
     <!-- edit form + map -->
@@ -86,18 +86,6 @@ const isLoading = computed(() => locationsStatus.value === "pending" || location
   flex: 1;
   display: grid;
   place-items: center;
-}
-
-.edit-location__spinner {
-  font-size: 2rem;
-  color: var(--ui-primary);
-  animation: edit-location-spin 0.8s linear infinite;
-}
-
-@keyframes edit-location-spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 /* ---------- Split layout (fills available height) ---------- */

@@ -53,7 +53,7 @@ async function deleteLocation() {
   <div class="location-logs-page">
     <!-- loading -->
     <div v-if="isLoading" class="location-logs__loading">
-      <Icon name="tabler:loader-2" class="location-logs__spinner" />
+      <Icon name="tabler:loader-2" class="spinner" />
     </div>
 
     <!-- details + logs -->
@@ -244,18 +244,6 @@ async function deleteLocation() {
   height: 100%;
   display: grid;
   place-items: center;
-}
-
-.location-logs__spinner {
-  font-size: 2rem;
-  color: var(--ui-primary);
-  animation: location-logs-spin 0.8s linear infinite;
-}
-
-@keyframes location-logs-spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 /* Fill the dashboard content area; the page itself never scrolls. */

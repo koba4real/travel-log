@@ -60,7 +60,7 @@ export const UseMapStore = defineStore("UseMapStore", () => {
         if (shouldFlyTo.value) {
           map.value?.map?.flyTo({
             center: [selectedMapPoint.value.long, selectedMapPoint.value.lat],
-            zoom: 6,
+            zoom: 10,
           });
         }
         shouldFlyTo.value = true;

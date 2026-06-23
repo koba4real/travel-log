@@ -12,10 +12,6 @@ const isLoading = computed(() => locationsStatus.value === "pending" || location
 
 const { $csrfFetch } = useNuxtApp();
 const toast = useToast();
-watchEffect(() => {
-  mapStore.selectedMapPoint = mapStore.mapPoints.find(p => p.slug === slug) || null;
-});
-
 const showDeleteModal = ref(false);
 const isDeleting = ref(false);
 
@@ -50,22 +46,22 @@ async function deleteLocation() {
 </script>
 
 <template>
-  <div class="location-logs-page">
+  <div class="page-fill">
     <!-- loading -->
-    <div v-if="isLoading" class="location-logs__loading">
+    <div v-if="isLoading" class="center-fill">
       <Icon name="tabler:loader-2" class="spinner" />
     </div>
 
     <!-- details + logs -->
-    <div v-else-if="location" class="location-logs">
-      <header class="location-logs__header">
-        <div class="location-logs__heading">
-          <p class="location-logs__eyebrow">
-            <UIcon name="tabler:route" class="location-logs__eyebrow-icon" />
+    <div v-else-if="location" class="page-shell">
+      <header class="page-header">
+        <div class="page-heading">
+          <p class="eyebrow">
+            <UIcon name="tabler:route" class="eyebrow-icon" />
             Travel log
           </p>
           <div class="location-logs__title-row">
-            <h1 class="location-logs__title">
+            <h1 class="page-title">
               {{ location.name }}
             </h1>
             <UDropdownMenu
@@ -107,19 +103,19 @@ async function deleteLocation() {
           :to="`/dashboard/location/${slug}/add`"
           color="primary"
           size="lg"
-          class="location-logs__add"
+          class="header-action"
         />
       </header>
 
-      <div class="location-logs__layout">
-        <section class="location-logs__list">
-          <div class="location-logs__section-head">
-            <h2 class="location-logs__section-title">
+      <div class="split-layout">
+        <section class="content-col">
+          <div class="section-head">
+            <h2 class="section-title">
               Logs
             </h2>
           </div>
 
-          <div class="location-logs__scroll">
+          <div class="content-scroll">
             <!-- loading -->
             <div v-if="locationLogsStatus === 'pending'" class="location-logs__items">
               <USkeleton
@@ -135,21 +131,22 @@ async function deleteLocation() {
                 v-for="log in locationLogs"
                 :key="log.id"
                 :log="log"
+                @click="navigateTo(`/dashboard/location/${slug}/${log.id}`)"
                 @mouseenter="mapStore.selectedMapPoint = mapStore.mapPoints.find((p) => p.id === log.id) ?? null"
                 @mouseleave="mapStore.selectedMapPoint = null"
               />
             </div>
 
             <!-- empty -->
-            <div v-else class="location-logs__empty">
-              <span class="location-logs__empty-icon-wrap">
-                <UIcon name="tabler:notebook" class="location-logs__empty-icon" />
+            <div v-else class="state-panel state-panel--bordered">
+              <span class="state-panel__icon-wrap">
+                <UIcon name="tabler:notebook" class="state-panel__icon" />
               </span>
-              <div class="location-logs__empty-copy">
-                <p class="location-logs__empty-title">
+              <div class="state-panel__copy">
+                <p class="state-panel__title">
                   No logs yet
                 </p>
-                <p class="location-logs__empty-text">
+                <p class="state-panel__text">
                   Start documenting this location by adding your first log.
                 </p>
               </div>
@@ -163,14 +160,14 @@ async function deleteLocation() {
           </div>
         </section>
 
-        <aside class="location-logs__map">
-          <div class="location-logs__section-head">
-            <h2 class="location-logs__section-title">
-              <UIcon name="tabler:map-2" class="location-logs__section-icon" />
+        <aside class="map-col">
+          <div class="section-head">
+            <h2 class="section-title">
+              <UIcon name="tabler:map-2" class="section-icon" />
               On the map
             </h2>
           </div>
-          <div class="location-logs__map-frame">
+          <div class="map-frame">
             <Map />
           </div>
         </aside>
@@ -178,15 +175,15 @@ async function deleteLocation() {
     </div>
 
     <!-- not found -->
-    <div v-else class="location-logs__not-found">
-      <span class="location-logs__not-found-icon-wrap">
-        <UIcon name="tabler:map-pin-off" class="location-logs__not-found-icon" />
+    <div v-else class="state-panel">
+      <span class="state-panel__icon-wrap">
+        <UIcon name="tabler:map-pin-off" class="state-panel__icon" />
       </span>
-      <div class="location-logs__not-found-copy">
-        <p class="location-logs__not-found-title">
+      <div class="state-panel__copy">
+        <p class="state-panel__title">
           Location not found
         </p>
-        <p class="location-logs__not-found-text">
+        <p class="state-panel__text">
           The location you're looking for doesn't exist or may have been removed.
         </p>
       </div>
@@ -234,72 +231,10 @@ async function deleteLocation() {
 </template>
 
 <style scoped>
-/* Wrapper so the loading / details / not-found states each fill the content area. */
-.location-logs-page {
-  height: 100%;
-}
-
-/* ---------- Loading ---------- */
-.location-logs__loading {
-  height: 100%;
-  display: grid;
-  place-items: center;
-}
-
-/* Fill the dashboard content area; the page itself never scrolls. */
-.location-logs {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  max-width: 90rem;
-  margin-inline: auto;
-}
-
-/* ---------- Header (pinned) ---------- */
-.location-logs__header {
-  flex-shrink: 0;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 1rem;
-  padding-bottom: 1.25rem;
-  border-bottom: 1px solid var(--ui-border);
-}
-
-.location-logs__heading {
-  min-width: 0;
-}
-
-.location-logs__eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  margin: 0 0 0.4rem;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ui-primary);
-}
-
-.location-logs__eyebrow-icon {
-  font-size: 1rem;
-}
-
 .location-logs__title-row {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-}
-
-.location-logs__title {
-  margin: 0;
-  font-size: clamp(1.625rem, 1.3rem + 1.4vw, 2.125rem);
-  font-weight: 700;
-  letter-spacing: -0.025em;
-  color: var(--ui-text-highlighted);
 }
 
 /* Kebab trigger: subtle, lifts on hover. */
@@ -326,72 +261,6 @@ async function deleteLocation() {
   color: var(--ui-text-muted);
 }
 
-.location-logs__add {
-  flex-shrink: 0;
-}
-
-/* ---------- Split layout (fills remaining height) ---------- */
-.location-logs__layout {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-@media (min-width: 1024px) {
-  .location-logs__layout {
-    flex-direction: row;
-    align-items: stretch;
-  }
-}
-
-/* ---------- Section heads (shared) ---------- */
-.location-logs__section-head {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-  margin-bottom: 1rem;
-}
-
-.location-logs__section-title {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin: 0;
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--ui-text-highlighted);
-}
-
-.location-logs__section-icon {
-  font-size: 1.25rem;
-  color: var(--ui-primary);
-}
-
-/* ---------- Logs (internal scroll) ---------- */
-.location-logs__list {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  min-height: 0;
-}
-
-@media (min-width: 1024px) {
-  .location-logs__list {
-    flex: 1.4;
-  }
-}
-
-.location-logs__scroll {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  padding-right: 0.25rem;
-  padding-bottom: 0.5rem;
-}
-
 .location-logs__items {
   display: flex;
   flex-direction: column;
@@ -401,134 +270,6 @@ async function deleteLocation() {
 .location-logs__skeleton {
   height: 8rem;
   border-radius: 1rem;
-}
-
-/* ---------- Empty state (centered in the scroll area) ---------- */
-.location-logs__empty {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  padding: 2.5rem 1.5rem;
-  text-align: center;
-  border: 1px dashed var(--ui-border-accented);
-  border-radius: 1.25rem;
-  background: var(--ui-bg-muted);
-}
-
-.location-logs__empty-icon-wrap {
-  display: grid;
-  place-items: center;
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 999px;
-  color: var(--ui-primary);
-  background: color-mix(in oklab, var(--ui-primary) 12%, transparent);
-}
-
-.location-logs__empty-icon {
-  font-size: 1.75rem;
-}
-
-.location-logs__empty-copy {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.location-logs__empty-title {
-  margin: 0;
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--ui-text-highlighted);
-}
-
-.location-logs__empty-text {
-  margin: 0;
-  max-width: 34ch;
-  font-size: 0.925rem;
-  line-height: 1.5;
-  color: var(--ui-text-muted);
-}
-
-/* ---------- Map (fills its column / a fixed panel on mobile) ---------- */
-.location-logs__map {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  flex-shrink: 0;
-}
-
-@media (min-width: 1024px) {
-  .location-logs__map {
-    flex: 1;
-  }
-}
-
-.location-logs__map-frame {
-  height: 38vh;
-  padding: 0.5rem;
-  border: 1px solid var(--ui-border);
-  border-radius: 1.5rem;
-  background: var(--ui-bg-elevated);
-  box-shadow: 0 18px 40px -24px rgb(0 0 0 / 0.45);
-}
-
-@media (min-width: 1024px) {
-  .location-logs__map-frame {
-    flex: 1;
-    min-height: 0;
-    height: auto;
-  }
-}
-
-/* ---------- Not found ---------- */
-.location-logs__not-found {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  padding: 2.5rem 1.5rem;
-  text-align: center;
-}
-
-.location-logs__not-found-icon-wrap {
-  display: grid;
-  place-items: center;
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 999px;
-  color: var(--ui-primary);
-  background: color-mix(in oklab, var(--ui-primary) 12%, transparent);
-}
-
-.location-logs__not-found-icon {
-  font-size: 1.75rem;
-}
-
-.location-logs__not-found-copy {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.location-logs__not-found-title {
-  margin: 0;
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--ui-text-highlighted);
-}
-
-.location-logs__not-found-text {
-  margin: 0;
-  max-width: 34ch;
-  font-size: 0.925rem;
-  line-height: 1.5;
-  color: var(--ui-text-muted);
 }
 
 /* ---------- Delete confirmation modal ---------- */

@@ -14,3 +14,309 @@
     transform: rotate(360deg);
   }
 }
+
+/* ============================================================
+   Dashboard page primitives
+   Shared layout/typography used across the location + log pages.
+   Each page composes these; only genuinely page-specific bits
+   (badges, grids, the kebab menu, modal) stay in <style scoped>.
+   ============================================================ */
+
+/* Outer wrapper that just fills the content area (detail pages
+   that swap loading / content / not-found states). */
+.page-fill {
+  height: 100%;
+}
+
+/* Page shell: flex column, centered, capped width. */
+.page-shell {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 90rem;
+  margin-inline: auto;
+}
+
+/* Form pages grow + scroll instead of locking to the viewport. */
+.page-shell--grow {
+  height: auto;
+  min-height: 100%;
+  gap: 0;
+}
+
+/* Pinned header with a bottom rule. */
+.page-header {
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--ui-border);
+}
+
+.page-heading {
+  min-width: 0;
+}
+
+/* A header-side action that never shrinks (Add / Back buttons). */
+.header-action {
+  flex-shrink: 0;
+}
+
+/* Uppercase primary eyebrow label + its icon. */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 0.4rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ui-primary);
+}
+
+.eyebrow-icon {
+  font-size: 1rem;
+}
+
+/* Page title (list + detail size). */
+.page-title {
+  margin: 0;
+  font-size: clamp(1.625rem, 1.3rem + 1.4vw, 2.125rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--ui-text-highlighted);
+}
+
+/* Slightly smaller title used on the form pages. */
+.page-title--sm {
+  font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem);
+  letter-spacing: -0.02em;
+}
+
+.page-subtitle {
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--ui-text-muted);
+}
+
+/* Split layout: stacked on mobile, side-by-side >=1024px. */
+.split-layout {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .split-layout {
+    flex-direction: row;
+    align-items: stretch;
+  }
+}
+
+/* Small section header ("On the map") + title + icon. */
+.section-head {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin-bottom: 1rem;
+}
+
+.section-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--ui-text-highlighted);
+}
+
+.section-icon {
+  font-size: 1.25rem;
+  color: var(--ui-primary);
+}
+
+/* Left content column with an internal scroll area (list pages). */
+.content-col {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+@media (min-width: 1024px) {
+  .content-col {
+    flex: 1.4;
+  }
+}
+
+.content-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+  padding-bottom: 0.5rem;
+}
+
+/* Left form column (form pages): scrolls, capped width on desktop. */
+.form-col {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+@media (min-width: 1024px) {
+  .form-col {
+    flex: 1;
+    max-width: 34rem;
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 0.25rem;
+  }
+}
+
+/* The framed card that holds a form, with an accent bar on top. */
+.form-panel {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(1.25rem, 0.9rem + 1.5vw, 2rem);
+  border: 1px solid var(--ui-border);
+  border-radius: 1.5rem;
+  background: var(--ui-bg-elevated);
+  box-shadow: 0 18px 40px -28px rgb(0 0 0 / 0.45);
+}
+
+.form-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, var(--ui-primary), color-mix(in oklab, var(--ui-primary) 30%, transparent));
+}
+
+/* Map column + the framed map inside it. */
+.map-col {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex-shrink: 0;
+}
+
+@media (min-width: 1024px) {
+  .map-col {
+    flex: 1;
+  }
+
+  /* Form pages let the map dominate the row. */
+  .map-col--wide {
+    flex: 2;
+  }
+}
+
+.map-frame {
+  height: 38vh;
+  padding: 0.5rem;
+  border: 1px solid var(--ui-border);
+  border-radius: 1.5rem;
+  background: var(--ui-bg-elevated);
+  box-shadow: 0 18px 40px -24px rgb(0 0 0 / 0.45);
+}
+
+/* Taller fixed range on mobile for the form pages. */
+.map-frame--tall {
+  height: clamp(18rem, 50vh, 34rem);
+}
+
+@media (min-width: 1024px) {
+  .map-frame {
+    flex: 1;
+    min-height: 0;
+    height: auto;
+  }
+}
+
+/* Centered spinner/loading area that fills its parent. */
+.center-fill {
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+
+/* Use inside a flex-column parent that has no resolved height. */
+.center-fill--grow {
+  height: auto;
+  flex: 1;
+}
+
+/* Centered empty / not-found state. */
+.state-panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+}
+
+/* Use inside a flex-column parent that has no resolved height. */
+.state-panel--grow {
+  height: auto;
+  flex: 1;
+}
+
+/* Empty states get a dashed frame + muted fill. */
+.state-panel--bordered {
+  border: 1px dashed var(--ui-border-accented);
+  border-radius: 1.25rem;
+  background: var(--ui-bg-muted);
+}
+
+.state-panel--bordered .state-panel__title {
+  font-size: 1.125rem;
+}
+
+.state-panel__icon-wrap {
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 999px;
+  color: var(--ui-primary);
+  background: color-mix(in oklab, var(--ui-primary) 12%, transparent);
+}
+
+.state-panel__icon {
+  font-size: 1.75rem;
+}
+
+.state-panel__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.state-panel__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--ui-text-highlighted);
+}
+
+.state-panel__text {
+  margin: 0;
+  max-width: 34ch;
+  font-size: 0.925rem;
+  line-height: 1.5;
+  color: var(--ui-text-muted);
+}

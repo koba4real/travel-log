@@ -9,6 +9,7 @@ export type MapPoint = {
   // Saved locations carry a slug to link back to their detail page;
   // draft/search markers don't, so it's optional.
   slug?: string;
+  to?: string;
   description?: string;
 } & LngLatItem;
 

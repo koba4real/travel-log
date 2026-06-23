@@ -7,7 +7,13 @@ export const UseLocationsStore = defineStore("UseLocationsStore", () => {
     refresh: refreshLocations,
   } = useFetch("/api/locations", {
     lazy: true,
+    server: false, // fetch client-side so the skeleton shows; SSR can't forward the auth cookie anyway
   });
+
+  // "idle" is the pre-fetch state on a client-only lazy fetch — treat it as loading
+  // so the UI shows a skeleton instead of an empty state before the request fires.
+  const locationsPending = computed(() =>
+    locationsStatus.value === "pending" || locationsStatus.value === "idle");
 
   const route = useRoute();
   const slug = computed(() => route.params.slug as string);
@@ -61,6 +67,7 @@ export const UseLocationsStore = defineStore("UseLocationsStore", () => {
   return {
     locations,
     locationsStatus,
+    locationsPending,
     refreshLocations,
     locationLogs,
     locationLogsStatus,

@@ -3,7 +3,7 @@ import type { NavigationMenuItem } from "@nuxt/ui";
 
 const authStore = useAuthStore();
 const route = useRoute();
-const { locationsStatus } = storeToRefs(UseLocationsStore());
+const { locationsPending } = storeToRefs(UseLocationsStore());
 const mapStore = UseMapStore();
 
 const items = computed<NavigationMenuItem[][]>(() => [
@@ -32,7 +32,6 @@ const items = computed<NavigationMenuItem[][]>(() => [
     onSelect: () => authStore.signOut(),
   }],
 ]);
-const locationsPending = computed(() => locationsStatus.value === "pending");
 
 const locationLinks = computed<NavigationMenuItem[]>(() => {
   const { slug } = route.params;

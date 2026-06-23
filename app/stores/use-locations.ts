@@ -28,6 +28,9 @@ export const UseLocationsStore = defineStore("UseLocationsStore", () => {
     watch: false,
   });
 
+  const locationLogsPending = computed(() =>
+    locationLogsStatus.value === "pending" || locationLogsStatus.value === "idle");
+
   watch(slug, (value) => {
     if (value)
       refreshLocationLogs();
@@ -71,6 +74,7 @@ export const UseLocationsStore = defineStore("UseLocationsStore", () => {
     refreshLocations,
     locationLogs,
     locationLogsStatus,
+    locationLogsPending,
     refreshLocationLogs,
   };
 });

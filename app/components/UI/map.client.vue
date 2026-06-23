@@ -101,7 +101,7 @@ onMounted(() => {
 
     <!-- Loading overlay while the locations are being fetched -->
     <div v-if="mapStore.isLoading" class="map__loading">
-      <Icon name="tabler:loader-2" class="map__spinner" />
+      <Icon name="tabler:loader-2" class="spinner" />
       <p class="map__loading-text">
         Loading your locations…
       </p>
@@ -147,22 +147,10 @@ onMounted(() => {
   backdrop-filter: blur(2px);
 }
 
-.map__spinner {
-  font-size: 2rem;
-  color: var(--ui-primary);
-  animation: map-spin 0.8s linear infinite;
-}
-
 .map__loading-text {
   margin: 0;
   font-size: 0.875rem;
   color: var(--ui-text-muted);
-}
-
-@keyframes map-spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 /* --- Popup (theme the default maplibre popup for light/dark) --- */

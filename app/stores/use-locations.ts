@@ -45,6 +45,7 @@ export const UseLocationsStore = defineStore("UseLocationsStore", () => {
       ? (locationLogs.value ?? []).map((log): MapPoint => ({
           id: log.id,
           name: log.name,
+          to: `/dashboard/location/${route.params.slug}/${log.id}`,
           description: log.description ?? undefined,
           lat: log.lat,
           long: log.long,
@@ -53,6 +54,7 @@ export const UseLocationsStore = defineStore("UseLocationsStore", () => {
           id: location.id,
           name: location.name,
           slug: location.slug,
+          to: `/dashboard/location/${location.slug}`,
           description: location.description ?? undefined,
           lat: location.lat,
           long: location.long,

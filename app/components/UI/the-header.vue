@@ -1,10 +1,3 @@
-<script setup lang="ts">
-import AuthButton from "./auth-button.vue";
-
-// Guest-facing site header: brand on the left, theme toggle and the
-// GitHub sign-in call-to-action on the right.
-</script>
-
 <template>
   <UHeader to="/">
     <template #title>

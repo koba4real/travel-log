@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import type { ButtonProps, DropdownMenuItem } from "@nuxt/ui";
 
-import { useAuthStore } from "~/stores/auth";
-
 const { color = "neutral" } = defineProps<{
   color?: ButtonProps["color"];
 }>();

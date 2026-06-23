@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { locations, locationsStatus } = storeToRefs(UseLocationsStore());
+const { locations, locationsPending } = storeToRefs(UseLocationsStore());
 const mapStore = UseMapStore();
 </script>
 
@@ -41,7 +41,7 @@ const mapStore = UseMapStore();
 
         <div class="locations__scroll">
           <!-- loading -->
-          <div v-if="locationsStatus === 'pending'" class="locations__grid">
+          <div v-if="locationsPending" class="locations__grid">
             <USkeleton
               v-for="n in 6"
               :key="n"

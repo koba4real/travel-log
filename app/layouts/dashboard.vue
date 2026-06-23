@@ -1,10 +1,8 @@
 <script lang="ts" setup>
 const authStore = useAuthStore();
-const locationsStore = UseLocationsStore();
-await Promise.all([
-  authStore.init(),
-  locationsStore.refreshLocations(),
-]);
+await authStore.init();
+// Locations load client-side via the store's lazy fetch (see use-locations.ts) so the
+// sidebar/list show a skeleton; awaiting them here would re-introduce the empty SSR flash.
 </script>
 
 <template>

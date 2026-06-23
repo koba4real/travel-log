@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import { useAuthStore } from "~/stores/auth";
-
-// Landing-page call-to-action: prompts guests to sign in, and points
-// already-authenticated visitors to their dashboard instead.
 const authStore = useAuthStore();
 </script>
 

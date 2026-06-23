@@ -36,29 +36,37 @@ export const UseLocationsStore = defineStore("UseLocationsStore", () => {
       refreshLocationLogs();
   }, { immediate: true });
 
-  // Keep the map store in sync so the map stays decoupled from the
   const mapStore = UseMapStore();
 
   watchEffect(() => {
-    const onLogsPage = route.path === `/dashboard/location/${route.params.slug}`;
-    mapStore.mapPoints = onLogsPage
-      ? (locationLogs.value ?? []).map((log): MapPoint => ({
-          id: log.id,
-          name: log.name,
-          to: `/dashboard/location/${route.params.slug}/${log.id}`,
-          description: log.description ?? undefined,
-          lat: log.lat,
-          long: log.long,
-        }))
-      : (locations.value ?? []).map((location): MapPoint => ({
-          id: location.id,
-          name: location.name,
-          slug: location.slug,
-          to: `/dashboard/location/${location.slug}`,
-          description: location.description ?? undefined,
-          lat: location.lat,
-          long: location.long,
-        }));
+    const base = `/dashboard/location/${route.params.slug}`;
+    const logId = route.params.id ? Number(route.params.id) : null;
+    // Logs list page, or a single log's detail page.
+    const onLogsContext = route.path === base || route.path === `${base}/${logId}`;
+
+    if (onLogsContext) {
+      const logs = (locationLogs.value ?? []).map((log): MapPoint => ({
+        id: log.id,
+        name: log.name,
+        to: `${base}/${log.id}`,
+        description: log.description ?? undefined,
+        lat: log.lat,
+        long: log.long,
+      }));
+      // On a single log's page, pin only that log so the map highlights it.
+      mapStore.mapPoints = logId ? logs.filter(p => p.id === logId) : logs;
+    }
+    else {
+      mapStore.mapPoints = (locations.value ?? []).map((location): MapPoint => ({
+        id: location.id,
+        name: location.name,
+        slug: location.slug,
+        to: `/dashboard/location/${location.slug}`,
+        description: location.description ?? undefined,
+        lat: location.lat,
+        long: location.long,
+      }));
+    }
   });
 
   watch(

@@ -12,10 +12,6 @@ const isLoading = computed(() => locationsStatus.value === "pending" || location
 
 const { $csrfFetch } = useNuxtApp();
 const toast = useToast();
-watchEffect(() => {
-  mapStore.selectedMapPoint = mapStore.mapPoints.find(p => p.slug === slug) || null;
-});
-
 const showDeleteModal = ref(false);
 const isDeleting = ref(false);
 

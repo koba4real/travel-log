@@ -9,7 +9,7 @@ const isLoading = computed(() => locationsStatus.value === "pending" || location
   <div class="add-log-page">
     <!-- loading -->
     <div v-if="isLoading" class="add-log__loading">
-      <Icon name="tabler:loader-2" class="add-log__spinner" />
+      <Icon name="tabler:loader-2" class="spinner" />
     </div>
 
     <!-- add-log form + map -->
@@ -84,18 +84,6 @@ const isLoading = computed(() => locationsStatus.value === "pending" || location
   flex: 1;
   display: grid;
   place-items: center;
-}
-
-.add-log__spinner {
-  font-size: 2rem;
-  color: var(--ui-primary);
-  animation: add-log-spin 0.8s linear infinite;
-}
-
-@keyframes add-log-spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 /* ---------- Split layout (fills available height) ---------- */

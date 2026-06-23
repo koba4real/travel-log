@@ -80,7 +80,7 @@ function selectResult(result: NominatimResult) {
     </div>
 
     <p v-if="searchLoading" class="location-search__status">
-      <Icon name="tabler:loader-2" class="location-search__spinner" />
+      <Icon name="tabler:loader-2" class="spinner location-search__spinner" />
       Searching…
     </p>
 
@@ -202,13 +202,5 @@ function selectResult(result: NominatimResult) {
 
 .location-search__spinner {
   font-size: 1rem;
-  color: var(--ui-primary);
-  animation: location-search-spin 0.8s linear infinite;
-}
-
-@keyframes location-search-spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 </style>

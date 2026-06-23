@@ -88,6 +88,7 @@ onMounted(() => {
             {{ point.description }}
           </p>
           <nuxt-link
+            v-if="point.slug"
             :to="`/dashboard/location/${point.slug}`"
             class="popup__link"
           >

@@ -27,7 +27,7 @@ const marker = {
   description: "Drag the marker to where this log happened.",
 };
 
-const locationLogsStore = UseLocationLogsStore();
+const locationsStore = UseLocationsStore();
 
 async function onSubmit(values: InsertLocationLog) {
   const saved = await $csrfFetch<SelectLocationLog>(`/api/locations/${props.location.slug}/logs`, {
@@ -39,7 +39,7 @@ async function onSubmit(values: InsertLocationLog) {
     description: `${saved.name} has been saved.`,
     color: "success",
   });
-  await locationLogsStore.refreshLocationLogs();
+  await locationsStore.refreshLocationLogs();
   await navigateTo(`/dashboard/location/${props.location.slug}`);
 }
 </script>

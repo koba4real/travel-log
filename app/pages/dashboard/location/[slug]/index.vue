@@ -6,11 +6,10 @@ const slug = useRoute().params.slug as string;
 const mapStore = UseMapStore();
 
 const locationsStore = UseLocationsStore();
-const { locations, locationsStatus } = storeToRefs(locationsStore);
+const { locations, locationsStatus, locationLogs, locationLogsStatus } = storeToRefs(locationsStore);
 const location = computed(() => locations.value?.find(l => l.slug === slug));
 const isLoading = computed(() => locationsStatus.value === "pending" || locationsStatus.value === "idle");
 
-const { locationLogs, locationLogsStatus } = storeToRefs(UseLocationLogsStore());
 const { $csrfFetch } = useNuxtApp();
 const toast = useToast();
 watchEffect(() => {
@@ -136,6 +135,8 @@ async function deleteLocation() {
                 v-for="log in locationLogs"
                 :key="log.id"
                 :log="log"
+                @mouseenter="mapStore.selectedMapPoint = mapStore.mapPoints.find((p) => p.id === log.id) ?? null"
+                @mouseleave="mapStore.selectedMapPoint = null"
               />
             </div>
 

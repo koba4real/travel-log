@@ -27,3 +27,5 @@ logs
 local.db
 local.db-shm
 local.db-wal
+
+docker-data

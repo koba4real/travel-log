@@ -21,7 +21,17 @@ const image = ref<File | null>(null);
       label="Drop your image here"
       description="SVG, PNG, JPG or GIF (max. 2MB)"
       class="log-images__upload"
-    />
+    >
+      <template #actions="{ open }">
+        <UButton
+          label="Select image"
+          icon="tabler:upload"
+          color="neutral"
+          variant="outline"
+          @click="open()"
+        />
+      </template>
+    </UFileUpload>
   </section>
 </template>
 

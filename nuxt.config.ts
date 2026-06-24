@@ -39,6 +39,11 @@ export default defineNuxtConfig({
         "maplibre-gl",
       ],
     },
+    server: {
+      watch: {
+        ignored: ["./docker-data/*"],
+      },
+    },
   },
   components: {
     dirs: [

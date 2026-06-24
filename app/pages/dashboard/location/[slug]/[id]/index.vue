@@ -1,9 +1,45 @@
 <script setup lang="ts">
+import type { SelectLocationLog } from "~~/lib/db/Schema/location-log";
+import type { FetchError } from "ofetch";
+
 const slug = useRoute().params.slug as string;
 const logId = Number(useRoute().params.id);
+const locationsStore = UseLocationsStore();
 const { locationLogs, locationLogsStatus } = storeToRefs(UseLocationsStore());
 const isLoading = computed(() => locationLogsStatus.value === "pending" || locationLogsStatus.value === "idle");
 const locationLog = computed(() => locationLogs.value?.find(log => log.id === logId));
+const showDeleteModal = ref(false);
+const isDeleting = ref(false);
+const { $csrfFetch } = useNuxtApp();
+const toast = useToast();
+async function deleteLocationLog() {
+  isDeleting.value = true;
+  try {
+    const deletedLog = await $csrfFetch<SelectLocationLog>(`/api/locations/${slug}/${logId}`, { method: "DELETE" });
+    await locationsStore.refreshLocationLogs();
+
+    toast.add({
+      title: "Log deleted",
+      description: `${deletedLog.name} has been deleted.`,
+      color: "success",
+    });
+
+    showDeleteModal.value = false;
+    navigateTo(`/dashboard/location/${slug}`);
+  }
+  catch (e) {
+    const error = e as FetchError;
+    toast.add({
+      title: "Could not delete log",
+      description: getFetchErrorMessage(error),
+      color: "error",
+      icon: "tabler:alert-triangle",
+    });
+  }
+  finally {
+    isDeleting.value = false;
+  }
+}
 </script>
 
 <template>
@@ -32,7 +68,7 @@ const locationLog = computed(() => locationLogs.value?.find(log => log.id === lo
                   icon: 'tabler:trash',
                   color: 'error',
                   onSelect: () => {
-                  //TODO: show delete modal
+                    showDeleteModal = true;
                   },
                 },
               ]"
@@ -94,6 +130,39 @@ const locationLog = computed(() => locationLogs.value?.find(log => log.id === lo
         color="primary"
       />
     </div>
+
+    <UModal
+      v-model:open="showDeleteModal"
+      title="Delete location"
+    >
+      <template #body>
+        <p class="location-logs__modal-text">
+          Are you sure you want to delete
+          <strong>{{ locationLog?.name }}</strong>? This will also remove its logs and
+          can't be undone.
+        </p>
+      </template>
+
+      <template #footer>
+        <div class="location-logs__modal-actions">
+          <UButton
+            variant="outline"
+            :disabled="isDeleting"
+            @click="showDeleteModal = false"
+          >
+            Cancel
+          </UButton>
+          <UButton
+            color="error"
+            icon="tabler:trash"
+            :loading="isDeleting"
+            @click="deleteLocationLog"
+          >
+            Delete
+          </UButton>
+        </div>
+      </template>
+    </UModal>
   </div>
 </template>
 
@@ -109,5 +178,17 @@ const locationLog = computed(() => locationLogs.value?.find(log => log.id === lo
   font-size: 0.95rem;
   line-height: 1.55;
   color: var(--ui-text-muted);
+}
+/* ---------- Delete confirmation modal ---------- */
+.location-logs__modal-text {
+  margin: 0;
+  line-height: 1.55;
+  color: var(--ui-text-muted);
+}
+
+.location-logs__modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
 }
 </style>

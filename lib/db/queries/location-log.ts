@@ -40,3 +40,7 @@ export async function updateLocationLog(id: number, data: InsertLocationLog) {
   }).where(eq(locationLog.id, id)).returning();
   return updatedLog;
 }
+export async function deleteLocationLog(id: number) {
+  const [deletedLog] = await db.delete(locationLog).where(eq(locationLog.id, id)).returning();
+  return deletedLog;
+}

@@ -94,6 +94,7 @@ async function deleteLocationLog() {
       <div class="split-layout">
         <section class="content-col">
           <LocationLogCard :log="locationLog" :interactive="false" />
+          <LocationLogImages :slug="slug" :log-id="logId" />
         </section>
 
         <aside class="map-col">
@@ -167,6 +168,13 @@ async function deleteLocationLog() {
 </template>
 
 <style scoped>
+/* Stack the log card and photo gallery; scroll the column so a tall gallery
+   doesn't clip and the map stays pinned. */
+.content-col {
+  gap: 1.5rem;
+  overflow-y: auto;
+}
+
 .location-logs__title-row {
   display: flex;
   align-items: center;

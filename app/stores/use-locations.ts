@@ -42,7 +42,7 @@ export const UseLocationsStore = defineStore("UseLocationsStore", () => {
     const base = `/dashboard/location/${route.params.slug}`;
     const logId = route.params.id ? Number(route.params.id) : null;
     // Logs list page, or a single log's detail page.
-    const onLogsContext = route.path === base || route.path === `${base}/${logId}`;
+    const onLogsContext = route.path === base || route.path === `${base}/${logId}` || route.path === `${base}/${logId}/edit`;
 
     if (onLogsContext) {
       const logs = (locationLogs.value ?? []).map((log): MapPoint => ({

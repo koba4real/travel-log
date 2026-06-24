@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import type { SelectLocationLog } from "~~/lib/db/Schema/location-log";
 
-const props = defineProps<{
+// interactive=false => embedded summary (no link affordances, no title/description);
+// the host page's header already shows the name + description.
+const props = withDefaults(defineProps<{
   log: Pick<SelectLocationLog, "name" | "description" | "startedAt" | "endedAt">;
-}>();
+  interactive?: boolean;
+}>(), { interactive: true });
 
 const monthFmt = new Intl.DateTimeFormat("en-US", { month: "short" });
 const rangeFmt = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" });
@@ -29,6 +32,7 @@ const durationLabel = computed(() => {
 <template>
   <UCard
     class="log-card"
+    :class="{ 'log-card--interactive': interactive }"
     :ui="{ body: 'p-0 sm:p-0' }"
   >
     <div class="log-card__inner">
@@ -40,16 +44,18 @@ const durationLabel = computed(() => {
       </div>
 
       <div class="log-card__body">
-        <div class="log-card__head">
-          <h3 class="log-card__title">
-            {{ log.name }}
-          </h3>
-          <UIcon name="tabler:arrow-up-right" class="log-card__arrow" />
-        </div>
+        <template v-if="interactive">
+          <div class="log-card__head">
+            <h3 class="log-card__title">
+              {{ log.name }}
+            </h3>
+            <UIcon name="tabler:arrow-up-right" class="log-card__arrow" />
+          </div>
 
-        <p v-if="log.description" class="log-card__description">
-          {{ log.description }}
-        </p>
+          <p v-if="log.description" class="log-card__description">
+            {{ log.description }}
+          </p>
+        </template>
 
         <div class="log-card__meta">
           <span class="log-card__range">
@@ -70,21 +76,24 @@ const durationLabel = computed(() => {
 .log-card {
   overflow: hidden;
   border-radius: 1rem;
+}
+
+.log-card--interactive {
+  cursor: pointer;
   transition:
     transform 0.25s ease,
     box-shadow 0.25s ease,
     border-color 0.25s ease;
   will-change: transform;
-  cursor: pointer;
 }
 
-.log-card:hover {
+.log-card--interactive:hover {
   transform: translateY(-3px);
   box-shadow: 0 18px 32px -16px rgb(0 0 0 / 0.35);
   border-color: var(--ui-primary);
 }
 
-.log-card:focus-within {
+.log-card--interactive:focus-within {
   outline: 2px solid var(--ui-primary);
   outline-offset: 2px;
 }
@@ -179,7 +188,7 @@ const durationLabel = computed(() => {
     color 0.2s ease;
 }
 
-.log-card:hover .log-card__arrow {
+.log-card--interactive:hover .log-card__arrow {
   opacity: 1;
   transform: translate(0, 0);
   color: var(--ui-primary);

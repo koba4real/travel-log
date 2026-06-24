@@ -4,43 +4,52 @@ import type { InsertLocationLog, SelectLocationLog } from "~~/lib/db/Schema/loca
 
 import { locationLogSchema } from "~~/lib/db/Schema/location-log";
 
-// A log is always created for an existing location, so the parent is required.
-const props = defineProps<{ location: SelectLocation }>();
+const props = defineProps<{ location: SelectLocation; log?: SelectLocationLog }>();
+const isEdit = computed(() => !!props.log);
+const locationsStore = UseLocationsStore();
 
 const { $csrfFetch } = useNuxtApp();
 const toast = useToast();
 
-// A new log starts pinned on its parent location; the user can drag the marker
-// (or search) to the exact spot the log happened.
+// epoch ms -> "YYYY-MM-DD" for the native date input
+function toDateInput(ms: number) {
+  return new Date(ms).toISOString().slice(0, 10);
+}
+
 const initialValues: InsertLocationLog = {
-  name: "",
-  description: "",
-  startedAt: "",
-  endedAt: "",
-  lat: props.location.lat,
-  long: props.location.long,
+  name: props.log?.name ?? "",
+  description: props.log?.description ?? "",
+  startedAt: props.log?.startedAt ? toDateInput(props.log.startedAt) : "",
+  endedAt: props.log?.endedAt ? toDateInput(props.log.endedAt) : "",
+  lat: props.log?.lat ?? props.location.lat,
+  long: props.log?.long ?? props.location.long,
 };
 
-const marker = {
-  id: -1, // sentinel — won't collide with any saved location marker
-  name: "Draft Log",
+const marker = computed(() => ({
+  id: props.log?.id ?? -1, // sentinel — won't collide with any saved marker
+  name: props.log?.name || "Draft Log",
   description: "Drag the marker to where this log happened.",
-};
-
-const locationsStore = UseLocationsStore();
+}));
 
 async function onSubmit(values: InsertLocationLog) {
-  const saved = await $csrfFetch<SelectLocationLog>(`/api/locations/${props.location.slug}/logs`, {
-    method: "POST",
-    body: values,
-  });
+  const saved = isEdit.value
+    ? await $csrfFetch<SelectLocationLog>(`/api/locations/${props.location.slug}/${props.log!.id}`, {
+        method: "PATCH",
+        body: values,
+      })
+    : await $csrfFetch<SelectLocationLog>(`/api/locations/${props.location.slug}/logs`, {
+        method: "POST",
+        body: values,
+      });
   toast.add({
-    title: "Log added",
+    title: isEdit.value ? "Log updated" : "Log added",
     description: `${saved.name} has been saved.`,
     color: "success",
   });
   await locationsStore.refreshLocationLogs();
-  await navigateTo(`/dashboard/location/${props.location.slug}`);
+  await navigateTo(isEdit.value
+    ? `/dashboard/location/${props.location.slug}/${saved.id}`
+    : `/dashboard/location/${props.location.slug}`);
 }
 </script>
 
@@ -49,10 +58,10 @@ async function onSubmit(values: InsertLocationLog) {
     :schema="locationLogSchema"
     :initial-values="initialValues"
     :on-submit="onSubmit"
-    submit-label="Add Log"
-    submit-icon="tabler:plus"
+    :submit-label="isEdit ? 'Save changes' : 'Add Log'"
+    :submit-icon="isEdit ? 'tabler:device-floppy' : 'tabler:plus'"
     :marker="marker"
-    error-title="Could not add log"
+    :error-title="isEdit ? 'Could not update log' : 'Could not add log'"
   >
     <template #default="{ state, loading }">
       <UFormField label="Title" name="name">

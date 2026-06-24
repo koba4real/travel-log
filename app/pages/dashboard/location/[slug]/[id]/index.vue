@@ -175,6 +175,12 @@ async function deleteLocationLog() {
   overflow-y: auto;
 }
 
+/* Keep each child at its natural height; the column scrolls instead of
+   squashing them so they can't overlap when the page is zoomed. */
+.content-col > * {
+  flex-shrink: 0;
+}
+
 .location-logs__title-row {
   display: flex;
   align-items: center;

@@ -2,6 +2,8 @@ import { relations } from "drizzle-orm";
 import { int, real, sqliteTable, text, unique } from "drizzle-orm/sqlite-core";
 import * as z from "zod";
 
+import type { SelectLocationLog } from "./location-log";
+
 import { user } from "./auth";
 import { locationLog } from "./location-log";
 
@@ -23,8 +25,6 @@ export const locationRelations = relations(location, ({ many }) => ({
   locationLogs: many(locationLog),
 }));
 
-export type SelectLocation = typeof location.$inferSelect;
-
 export const locationSchema = z.object({
   name: z
     .string({ message: "Please enter the location name" })
@@ -45,3 +45,7 @@ export const locationSchema = z.object({
 });
 
 export type InsertLocation = z.infer<typeof locationSchema>;
+export type SelectLocation = typeof location.$inferSelect;
+export type SelectLocationWithLogs = SelectLocation & {
+  locationLogs: SelectLocationLog[];
+};

@@ -1,3 +1,4 @@
+import type { SelectLocationLogWithImages } from "~~/lib/db/Schema/location-log";
 import type { MapPoint } from "~~/lib/types";
 
 export const UseLocationsStore = defineStore("UseLocationsStore", () => {
@@ -23,6 +24,15 @@ export const UseLocationsStore = defineStore("UseLocationsStore", () => {
     status: locationLogsStatus,
     refresh: refreshLocationLogs,
   } = useFetch(() => `/api/locations/${slug.value}/logs`, {
+    lazy: true,
+    immediate: false,
+    watch: false,
+  });
+  const {
+    data: CurrentLocationLog,
+    status: CurrentLocationLogStatus,
+    refresh: refreshCurrentLocationLog,
+  } = useFetch<SelectLocationLogWithImages>(() => `/api/locations/${slug.value}/${route.params.id}`, {
     lazy: true,
     immediate: false,
     watch: false,
@@ -86,5 +96,8 @@ export const UseLocationsStore = defineStore("UseLocationsStore", () => {
     locationLogsStatus,
     locationLogsPending,
     refreshLocationLogs,
+    CurrentLocationLog,
+    CurrentLocationLogStatus,
+    refreshCurrentLocationLog,
   };
 });

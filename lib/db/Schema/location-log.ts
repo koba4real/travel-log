@@ -2,6 +2,8 @@ import { relations } from "drizzle-orm";
 import { int, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import * as z from "zod";
 
+import type { SelectLocationLogImage } from "./location-log-image";
+
 import { user } from "./auth";
 import { location } from "./location";
 import { locationLogImage } from "./location-log-image";
@@ -27,8 +29,6 @@ export const locationLogRelations = relations(locationLog, ({ one, many }) => ({
   }),
   images: many(locationLogImage),
 }));
-
-export type SelectLocationLog = typeof locationLog.$inferSelect;
 
 export const locationLogSchema = z.object({
   name: z
@@ -57,3 +57,7 @@ export const locationLogSchema = z.object({
   });
 
 export type InsertLocationLog = z.infer<typeof locationLogSchema>;
+export type SelectLocationLog = typeof locationLog.$inferSelect;
+export type SelectLocationLogWithImages = SelectLocationLog & {
+  images: SelectLocationLogImage[];
+};

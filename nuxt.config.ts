@@ -23,6 +23,7 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "nuxt-csurf",
     "nuxt-maplibre",
+    "nuxt-easy-lightbox",
   ],
   colorMode: {
     preference: "system", // auto-detect the OS theme until the user overrides

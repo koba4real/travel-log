@@ -46,6 +46,20 @@ export const UseLocationsStore = defineStore("UseLocationsStore", () => {
       refreshLocationLogs();
   }, { immediate: true });
 
+  // Refetch the viewed log (with its images) whenever the slug/id changes. The
+  // detail page component is reused when moving between logs, so a lifecycle hook
+  // misses param-only changes — watching here catches every move. Clear first so
+  // the previously viewed log's photos never linger during the fetch.
+  watch(
+    [slug, () => route.params.id],
+    ([s, id]) => {
+      CurrentLocationLog.value = undefined;
+      if (s && id)
+        refreshCurrentLocationLog();
+    },
+    { immediate: true },
+  );
+
   const mapStore = UseMapStore();
 
   watchEffect(() => {

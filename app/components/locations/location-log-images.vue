@@ -8,10 +8,7 @@ const route = useRoute();
 const { $csrfFetch } = useNuxtApp();
 const toast = useToast();
 const locationStore = UseLocationsStore();
-const { CurrentLocationLog } = storeToRefs(locationStore);
-
-// Load the current log (with its images) so the photo count is accurate on mount.
-onMounted(() => locationStore.refreshCurrentLocationLog());
+const { CurrentLocationLog, CurrentLocationLogStatus } = storeToRefs(locationStore);
 
 async function getChecksum(blob: Blob) {
   const hash = await crypto.subtle.digest("SHA-256", await blob.arrayBuffer());
@@ -153,6 +150,32 @@ async function onUpload() {
       </figcaption>
     </figure>
   </UFileUpload>
+  <!-- loading: avoids flashing the empty state while a log's photos are fetched -->
+  <div v-if="CurrentLocationLogStatus === 'pending'" class="gallery-loading">
+    <UIcon name="tabler:loader-2" class="spinner" />
+  </div>
+  <section v-else-if="CurrentLocationLog?.images?.length" class="gallery">
+    <LocationLogImageCard
+      v-for="photo in CurrentLocationLog.images"
+      :key="photo.id"
+      :image-src="`http://localhost:9000/images/${photo.key}`"
+      :image-alt="`Photo ${photo.id} for log ${CurrentLocationLog.id}`"
+    />
+  </section>
+  <!-- empty -->
+  <div v-else class="state-panel state-panel--bordered gallery-empty">
+    <span class="state-panel__icon-wrap">
+      <UIcon name="tabler:photo-off" class="state-panel__icon" />
+    </span>
+    <div class="state-panel__copy">
+      <p class="state-panel__title">
+        No images yet
+      </p>
+      <p class="state-panel__text">
+        Start logging your travel experiences by adding your first image.
+      </p>
+    </div>
+  </div>
 </template>
 
 <style scoped>
@@ -245,5 +268,27 @@ async function onUpload() {
   font-weight: 500;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+  gap: 0.75rem;
+}
+
+/* The shared .state-panel fills its parent's height (for full-page
+   "not found" views); inline under the uploader it should size to its
+   own content instead. */
+.gallery-empty {
+  height: auto;
+  padding: 2rem 1.5rem;
+}
+
+.gallery-loading {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  font-size: 1.5rem;
+  color: var(--ui-text-muted);
 }
 </style>

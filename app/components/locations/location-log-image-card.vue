@@ -1,18 +1,41 @@
 <script setup lang="ts">
-const { imageSrc } = defineProps<{
+import type { FetchError } from "ofetch";
+
+const { imageId } = defineProps<{
   imageSrc: string;
   imageAlt: string;
+  imageId: number;
 }>();
+const locationStore = UseLocationsStore();
 const showDeleteModal = ref(false);
 const isDeleting = ref(false);
+const { $csrfFetch } = useNuxtApp();
+const toast = useToast();
+const route = useRoute();
 
 async function deleteImage() {
   isDeleting.value = true;
   try {
-    console.log("delete image", imageSrc);
+    await $csrfFetch(`/api/locations/${route.params.slug}/${route.params.id}/image/${imageId}`, {
+      method: "DELETE",
+    });
+    toast.add({
+      title: "Image deleted",
+      color: "success",
+      icon: "tabler:circle-check",
+      description: "The image has been removed from this log.",
+    });
+
+    await locationStore.refreshCurrentLocationLog();
   }
   catch (e) {
-    console.error("Error deleting image:", e);
+    const error = e as FetchError;
+    toast.add({
+      title: "Could not delete location log image",
+      description: getFetchErrorMessage(error),
+      color: "error",
+      icon: "tabler:alert-triangle",
+    });
   }
   finally {
     isDeleting.value = false;

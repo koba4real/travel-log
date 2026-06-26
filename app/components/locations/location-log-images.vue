@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { FetchError } from "ofetch";
 
+const config = useRuntimeConfig();
 const image = ref<File | null>(null);
 const preview = computed(() => image.value ? URL.createObjectURL(image.value) : undefined);
 const loading = ref(false);
@@ -158,7 +159,8 @@ async function onUpload() {
     <LocationLogImageCard
       v-for="photo in CurrentLocationLog.images"
       :key="photo.id"
-      :image-src="`http://localhost:9000/images/${photo.key}`"
+      :image-id="photo.id"
+      :image-src="`${config.public.s3BucketUrl}/${photo.key}`"
       :image-alt="`Photo ${photo.id} for log ${CurrentLocationLog.id}`"
     />
   </section>

@@ -1,10 +1,9 @@
 import { GetObjectCommand } from "@aws-sdk/client-s3";
-import { findLocationBySlug } from "~~/lib/db/queries/location";
-import { findLocationLogById } from "~~/lib/db/queries/location-log";
 import { insertLocationLogImage } from "~~/lib/db/queries/location-log-image";
 import { insertLocationLogImageSchema } from "~~/lib/db/Schema/location-log-image";
 import env from "~~/lib/env";
 import { createS3Client } from "~~/server/utils/create-s3-client";
+import { findOwnedLocationLog } from "~~/server/utils/find-owned-location-log";
 
 type objectMetadata = {
   "user-id": string;
@@ -27,15 +26,7 @@ export default defineAuthenticatedEventHandler(async (event) => {
   const userId = event.context.user!.id;
 
   // Confirm the log exists and the user owns it before signing an upload.
-  const location = await findLocationBySlug(slug);
-  if (!location || location.userId !== userId) {
-    throw createError({ statusCode: 404, statusMessage: "Location not found" });
-  }
-
-  const log = await findLocationLogById(Number.parseInt(id));
-  if (!log || log.userId !== userId || log.locationId !== location.id) {
-    throw createError({ statusCode: 404, statusMessage: "Location log not found" });
-  }
+  await findOwnedLocationLog(slug, id, userId);
 
   const client = createS3Client();
   const command = new GetObjectCommand({

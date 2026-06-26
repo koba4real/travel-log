@@ -1,7 +1,7 @@
 import tailwindcss from "@tailwindcss/vite";
 
 // Validate environment variables on startup; throws if any are missing.
-import "./lib/env";
+import env from "./lib/env";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -12,6 +12,9 @@ export default defineNuxtConfig({
     // Nominatim (OpenStreetMap) is keyless but its usage policy requires an
     // identifying User-Agent. Override per environment via NUXT_NOMINATIM_USER_AGENT.
     nominatimUserAgent: "nuxt-travel-log/1.0 (https://github.com/koba/travel-log)",
+    public: {
+      s3BucketUrl: env.S3_BUCKET_URL,
+    },
   },
   modules: [
     "@nuxt/eslint",

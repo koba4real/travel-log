@@ -1,8 +1,24 @@
 <script setup lang="ts">
-defineProps<{
+const { imageSrc } = defineProps<{
   imageSrc: string;
   imageAlt: string;
 }>();
+const showDeleteModal = ref(false);
+const isDeleting = ref(false);
+
+async function deleteImage() {
+  isDeleting.value = true;
+  try {
+    console.log("delete image", imageSrc);
+  }
+  catch (e) {
+    console.error("Error deleting image:", e);
+  }
+  finally {
+    isDeleting.value = false;
+    showDeleteModal.value = false;
+  }
+}
 </script>
 
 <template>
@@ -15,15 +31,75 @@ defineProps<{
       :alt="imageAlt"
       class="image-card__img"
     >
+    <UButton
+      icon="tabler:trash"
+      size="md"
+      color="error"
+      variant="solid"
+      class="image-card__delete"
+      @click="showDeleteModal = true"
+    >
+      delete
+    </UButton>
   </UCard>
+  <UModal
+    v-model:open="showDeleteModal"
+    title="Delete location log image"
+  >
+    <template #body>
+      <p class="location-logs__modal-text">
+        Are you sure you want to delete this image? It will be removed and can't be undone.
+      </p>
+      <img
+        :src="imageSrc"
+        :alt="imageAlt"
+        class="location-logs__modal-preview"
+      >
+    </template>
+
+    <template #footer>
+      <div class="location-logs__modal-actions">
+        <UButton
+          variant="outline"
+          :disabled="isDeleting"
+          @click="showDeleteModal = false"
+        >
+          Cancel
+        </UButton>
+        <UButton
+          color="error"
+          icon="tabler:trash"
+          :loading="isDeleting"
+          @click="deleteImage"
+        >
+          Delete
+        </UButton>
+      </div>
+    </template>
+  </UModal>
 </template>
 
 <style scoped>
 .image-card {
+  position: relative;
   overflow: hidden;
   transition:
     transform 0.2s,
     box-shadow 0.2s;
+}
+
+.image-card__delete {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.image-card:hover .image-card__delete,
+.image-card:focus-within .image-card__delete {
+  opacity: 1;
 }
 
 .image-card:hover {
@@ -38,5 +114,27 @@ defineProps<{
   aspect-ratio: 1;
   object-fit: contain;
   background: var(--ui-bg-muted);
+}
+
+.location-logs__modal-text {
+  /* Long URLs were stretching/overflowing the modal. */
+  word-break: break-word;
+}
+
+.location-logs__modal-preview {
+  display: block;
+  width: 100%;
+  max-height: 16rem;
+  margin-top: 0.75rem;
+  border-radius: var(--ui-radius);
+  object-fit: contain;
+  background: var(--ui-bg-muted);
+}
+
+.location-logs__modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
 }
 </style>

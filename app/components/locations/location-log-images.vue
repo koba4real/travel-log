@@ -11,6 +11,21 @@ const toast = useToast();
 const locationStore = UseLocationsStore();
 const { CurrentLocationLog, CurrentLocationLogStatus } = storeToRefs(locationStore);
 
+const imgs = computed(() =>
+  (CurrentLocationLog.value?.images ?? []).map(img =>
+    `${config.public.s3BucketUrl}/${img.key}`));
+
+const lightboxVisible = ref(false);
+const lightboxIndex = ref(0);
+
+function showImg(index: number) {
+  lightboxIndex.value = index;
+  lightboxVisible.value = true;
+}
+function onIndexChange(_oldIndex: number, newIndex: number) {
+  lightboxIndex.value = newIndex;
+}
+
 async function getChecksum(blob: Blob) {
   const hash = await crypto.subtle.digest("SHA-256", await blob.arrayBuffer());
   return btoa(String.fromCharCode(...new Uint8Array(hash)));
@@ -157,11 +172,12 @@ async function onUpload() {
   </div>
   <section v-else-if="CurrentLocationLog?.images?.length" class="gallery">
     <LocationLogImageCard
-      v-for="photo in CurrentLocationLog.images"
+      v-for="(photo, index) in CurrentLocationLog.images"
       :key="photo.id"
       :image-id="photo.id"
-      :image-src="`${config.public.s3BucketUrl}/${photo.key}`"
+      :image-src="imgs[index]!"
       :image-alt="`Photo ${photo.id} for log ${CurrentLocationLog.id}`"
+      @view="showImg(index)"
     />
   </section>
   <!-- empty -->
@@ -178,6 +194,21 @@ async function onUpload() {
       </p>
     </div>
   </div>
+
+  <VueEasyLightbox
+    :visible="lightboxVisible"
+    :imgs="imgs"
+    :index="lightboxIndex"
+    loop
+    @hide="lightboxVisible = false"
+    @on-index-change="onIndexChange"
+  />
+  <!-- The lightbox has no built-in counter; overlay one above its mask (z-index 9998). -->
+  <Teleport to="body">
+    <div v-if="lightboxVisible" class="lightbox-count">
+      {{ lightboxIndex + 1 }} / {{ imgs.length }}
+    </div>
+  </Teleport>
 </template>
 
 <style scoped>
@@ -292,5 +323,22 @@ async function onUpload() {
   padding: 2rem 1.5rem;
   font-size: 1.5rem;
   color: var(--ui-text-muted);
+}
+
+/* Teleported to body, so position: fixed is viewport-relative; sits above the
+   lightbox mask (z-index 9998). */
+.lightbox-count {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  padding: 0.3rem 0.85rem;
+  border-radius: 999px;
+  background: rgb(0 0 0 / 0.55);
+  color: white;
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
 }
 </style>

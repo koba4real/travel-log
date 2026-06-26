@@ -38,6 +38,7 @@
     "motion-v": "^2.3.0",
     "nuxt": "^4.4.7",
     "nuxt-csurf": "1.6.5",
+    "nuxt-easy-lightbox": "1.1.0",
     "nuxt-maplibre": "1.2.2",
     "pinia": "^3.0.4",
     "slugify": "^1.6.9",

@@ -6,6 +6,7 @@ const { imageId } = defineProps<{
   imageAlt: string;
   imageId: number;
 }>();
+const emit = defineEmits(["view"]);
 const locationStore = UseLocationsStore();
 const showDeleteModal = ref(false);
 const isDeleting = ref(false);
@@ -53,6 +54,7 @@ async function deleteImage() {
       :src="imageSrc"
       :alt="imageAlt"
       class="image-card__img"
+      @click="emit('view')"
     >
     <UButton
       icon="tabler:trash"
@@ -137,6 +139,7 @@ async function deleteImage() {
   aspect-ratio: 1;
   object-fit: contain;
   background: var(--ui-bg-muted);
+  cursor: pointer;
 }
 
 .location-logs__modal-text {

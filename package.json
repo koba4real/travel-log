@@ -22,6 +22,8 @@
     "db:shell": "tursodb local.db"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1075.0",
+    "@aws-sdk/s3-presigned-post": "^3.1075.0",
     "@indoorequal/vue-maplibre-gl": "^8.4.2",
     "@libsql/client": "^0.17.3",
     "@nuxt/eslint": "1.15.2",

@@ -13,6 +13,11 @@ export async function findLocationLogs(locationId: number) {
 export async function findLocationLogById(id: number) {
   return db.query.locationLog.findFirst({
     where: (log, { eq }) => eq(log.id, id),
+    with: {
+      images: {
+        orderBy: (image, { desc }) => desc(image.createdAt),
+      },
+    },
   });
 }
 

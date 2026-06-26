@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import z from "zod";
 
 import { user } from "./auth";
 import { locationLog } from "./location-log";
@@ -20,5 +21,10 @@ export const locationLogImageRelations = relations(locationLogImage, ({ one }) =
   }),
 }));
 
-export type InsertLocationLogImage = typeof locationLogImage.$inferInsert;
+export const insertLocationLogImageSchema = z.object({
+  key: z
+    .string()
+    .regex(/^\d+\/\d+\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\.jpg$/, "Invalid key"),
+});
+export type InsertLocationLogImage = z.infer<typeof insertLocationLogImageSchema>;
 export type SelectLocationLogImage = typeof locationLogImage.$inferSelect;

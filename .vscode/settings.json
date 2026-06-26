@@ -56,7 +56,9 @@
     "postcss"
   ],
   "cSpell.words": [
+    "csrffetch",
     "esbuild",
+    "insertable",
     "kbds",
     "lucide",
     "nuxt",

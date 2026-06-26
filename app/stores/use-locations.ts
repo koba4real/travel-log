@@ -1,3 +1,4 @@
+import type { SelectLocationLogWithImages } from "~~/lib/db/Schema/location-log";
 import type { MapPoint } from "~~/lib/types";
 
 export const UseLocationsStore = defineStore("UseLocationsStore", () => {
@@ -27,6 +28,15 @@ export const UseLocationsStore = defineStore("UseLocationsStore", () => {
     immediate: false,
     watch: false,
   });
+  const {
+    data: CurrentLocationLog,
+    status: CurrentLocationLogStatus,
+    refresh: refreshCurrentLocationLog,
+  } = useFetch<SelectLocationLogWithImages>(() => `/api/locations/${slug.value}/${route.params.id}`, {
+    lazy: true,
+    immediate: false,
+    watch: false,
+  });
 
   const locationLogsPending = computed(() =>
     locationLogsStatus.value === "pending" || locationLogsStatus.value === "idle");
@@ -35,6 +45,20 @@ export const UseLocationsStore = defineStore("UseLocationsStore", () => {
     if (value)
       refreshLocationLogs();
   }, { immediate: true });
+
+  // Refetch the viewed log (with its images) whenever the slug/id changes. The
+  // detail page component is reused when moving between logs, so a lifecycle hook
+  // misses param-only changes — watching here catches every move. Clear first so
+  // the previously viewed log's photos never linger during the fetch.
+  watch(
+    [slug, () => route.params.id],
+    ([s, id]) => {
+      CurrentLocationLog.value = undefined;
+      if (s && id)
+        refreshCurrentLocationLog();
+    },
+    { immediate: true },
+  );
 
   const mapStore = UseMapStore();
 
@@ -86,5 +110,8 @@ export const UseLocationsStore = defineStore("UseLocationsStore", () => {
     locationLogsStatus,
     locationLogsPending,
     refreshLocationLogs,
+    CurrentLocationLog,
+    CurrentLocationLogStatus,
+    refreshCurrentLocationLog,
   };
 });

@@ -10,12 +10,6 @@ const { locationsPending } = storeToRefs(UseLocationsStore());
 
 const navItems = computed<NavigationMenuItem[]>(() => [
   {
-    label: "Home",
-    icon: "tabler:home",
-    to: "/dashboard",
-    active: route.path === "/dashboard",
-  },
-  {
     label: "Locations",
     icon: "tabler:map-pin",
     to: "/dashboard/location",
@@ -30,10 +24,6 @@ const navItems = computed<NavigationMenuItem[]>(() => [
 ]);
 
 const accountItems = computed<NavigationMenuItem[]>(() => [
-  {
-    label: "Settings",
-    icon: "tabler:settings",
-  },
   {
     label: "Logout",
     icon: "tabler:logout",

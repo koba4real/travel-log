@@ -1,5 +1,5 @@
 <template>
-  <UHeader to="/">
+  <UHeader to="/" :ui="{ container: 'max-w-full px-4 sm:px-6' }">
     <template #title>
       <span class="brand">
         <UIcon name="tabler:map-pins" class="brand__icon" />

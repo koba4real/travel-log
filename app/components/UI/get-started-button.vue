@@ -6,7 +6,7 @@ const authStore = useAuthStore();
   <UButton
     v-if="authStore.user"
     label="Go to dashboard"
-    to="/dashboard"
+    to="/dashboard/location"
     color="primary"
     trailing-icon="tabler:arrow-right"
   />

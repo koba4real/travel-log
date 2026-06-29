@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1781508335477,
-      "tag": "0000_smiling_harrier",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1781513518284,
-      "tag": "0001_medical_butterfly",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1781698071999,
-      "tag": "0002_true_pixie",
+      "when": 1782725793994,
+      "tag": "0000_famous_mysterio",
       "breakpoints": true
     }
   ]

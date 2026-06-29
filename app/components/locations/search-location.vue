@@ -79,6 +79,18 @@ function selectResult(result: NominatimResult) {
       </UButton>
     </div>
 
+    <p class="location-search__attribution">
+      Search results provided by:
+      <a
+        href="https://nominatim.org/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="location-search__attribution-link"
+      >
+        Nominatim
+      </a>
+    </p>
+
     <p v-if="searchLoading" class="location-search__status">
       <Icon name="tabler:loader-2" class="spinner location-search__spinner" />
       Searching…
@@ -202,5 +214,20 @@ function selectResult(result: NominatimResult) {
 
 .location-search__spinner {
   font-size: 1rem;
+}
+
+.location-search__attribution {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--ui-text-muted);
+}
+
+.location-search__attribution-link {
+  color: var(--ui-primary);
+  text-decoration: underline;
+}
+
+.location-search__attribution-link:hover {
+  text-decoration: none;
 }
 </style>

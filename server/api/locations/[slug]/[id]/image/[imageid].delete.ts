@@ -6,7 +6,7 @@ import { findOwnedLocationLog } from "~~/server/utils/find-owned-location-log";
 export default defineAuthenticatedEventHandler(async (event) => {
   const slug = getRouterParam(event, "slug");
   const logId = getRouterParam(event, "id");
-  const imageId = getRouterParam(event, "imageId");
+  const imageId = getRouterParam(event, "imageid");
 
   if (!imageId) {
     throw createError({ statusCode: 400, statusMessage: "Missing image ID" });
